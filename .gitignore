@@ -336,3 +336,9 @@ bin/
 .idea
 .run
 .vscode
+
+# Sim GUI JSONS
+*simgui*.json
+
+# Sysid
+.sysid
