@@ -334,4 +334,5 @@ bin/
 
 # IDEs
 .idea
+.run
 .vscode
