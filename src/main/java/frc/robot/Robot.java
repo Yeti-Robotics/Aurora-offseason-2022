@@ -5,10 +5,15 @@
 
 package frc.robot;
 
+import dagger.internal.DaggerGenerated;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.di.DaggerRobotComponent;
+import frc.robot.di.RobotComponent;
+import frc.robot.di.RobotModule;
 
+import javax.inject.Inject;
 
 
 /**
@@ -17,13 +22,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot
-{
+public class Robot extends TimedRobot {
+    @Inject RobotContainer robotContainer;
     private Command autonomousCommand;
-    
-    private RobotContainer robotContainer;
-    
-    
+
+    public Robot() {
+        RobotComponent robotComponent = DaggerRobotComponent.builder().build();
+        robotComponent.inject(this);
+        robotContainer.setRobotComponent(robotComponent);
+    }
+
     /**
      * This method is run when the robot is first started up and should be used for any
      * initialization code.

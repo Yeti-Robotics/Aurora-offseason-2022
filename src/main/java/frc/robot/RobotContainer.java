@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.ExampleSubsystem;
 
+import javax.inject.Inject;
 
 
 /**
@@ -19,8 +21,8 @@ import frc.robot.subsystems.ExampleSubsystem;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class RobotContainer
-{
+public class RobotContainer {
+    private RobotComponent robotComponent;
     // The robot's subsystems and commands are defined here...
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     
@@ -28,6 +30,7 @@ public class RobotContainer
     
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    @Inject
     public RobotContainer()
     {
         // Configure the button bindings
@@ -58,4 +61,8 @@ public class RobotContainer
         // An ExampleCommand will run in autonomous
         return autoCommand;
     }
+
+    public void setRobotComponent(RobotComponent robotComponent) { this.robotComponent = robotComponent;}
+
+    public RobotComponent getRobotComponent() { return robotComponent; }
 }
