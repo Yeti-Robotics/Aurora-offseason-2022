@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 import javax.inject.Singleton;
 
-@Module(includes = MotorModule.class)
+@Module(includes = {MotorModule.class, SolenoidModule.class})
 public class DeviceModule {
     @Provides
     @Singleton

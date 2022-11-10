@@ -49,7 +49,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         DifferentialDrive differentialDrive,
         DifferentialDriveWheelSpeeds wheelSpeeds,
         DifferentialDriveOdometry odometer,
-        DoubleSolenoid shifter,
+        @Named("shifter") DoubleSolenoid shifter,
         AHRS gyro
         ) {
         this.leftMotor1 = leftFalcon1;
@@ -203,23 +203,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return shifter.get();
     }
 
-    public void setDriveMode(RobotContainer container, DriveMode mode) {
-        driveMode = mode;
-        switch (driveMode) {
-            case TANK:
-                this.setDefaultCommand(
-                    new RunCommand(() -> tankDrive(container.getLeftY(), container.getRightY()), this));
-                break;
-            case CHEEZY:
-                this.setDefaultCommand(
-                    new RunCommand(() -> cheezyDrive(container.getLeftY(), container.getRightX()), this));
-                break;
-            case ARCADE:
-                this.setDefaultCommand(
-                    new RunCommand(() -> arcadeDrive(container.getLeftY(), container.getRightX()), this));
-                break;
-        }
-    }
+
 
     public DriveMode getDriveMode() {
         return driveMode;
