@@ -8,9 +8,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.ExampleCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.di.RobotComponent;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 import javax.inject.Inject;
 
@@ -23,46 +23,50 @@ import javax.inject.Inject;
  */
 public class RobotContainer {
     private RobotComponent robotComponent;
-    // The robot's subsystems and commands are defined here...
-    private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-    
-    private final ExampleCommand autoCommand = new ExampleCommand(exampleSubsystem);
-    
-    
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
+    public final DrivetrainSubsystem drivetrainSubsystem;
+
+
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     @Inject
-    public RobotContainer()
-    {
+    public RobotContainer(
+        DrivetrainSubsystem drivetrainSubsystem) {
+        this.drivetrainSubsystem = drivetrainSubsystem;
+
         // Configure the button bindings
         configureButtonBindings();
     }
-    
-    
+
+
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    private void configureButtonBindings()
-    {
+    private void configureButtonBindings() {
         // Add button to command mappings here.
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
     }
-    
-    
+
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand()
-    {
+    public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return autoCommand;
+        return new InstantCommand();
     }
 
-    public void setRobotComponent(RobotComponent robotComponent) { this.robotComponent = robotComponent;}
+    public void setRobotComponent(RobotComponent robotComponent) {
+        this.robotComponent = robotComponent;
+    }
 
-    public RobotComponent getRobotComponent() { return robotComponent; }
+    public RobotComponent getRobotComponent() {
+        return robotComponent;
+    }
 }
