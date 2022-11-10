@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.ButtonFactory;
 
 import javax.inject.Inject;
+import java.util.function.BooleanSupplier;
 
 
 /**
@@ -24,17 +26,23 @@ import javax.inject.Inject;
 public class RobotContainer {
     private RobotComponent robotComponent;
 
+    public final GenericHID controller;
     public final DrivetrainSubsystem drivetrainSubsystem;
 
+    private final ButtonFactory buttonFactory;
+    private boolean buttonLayerToggle;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     @Inject
     public RobotContainer(
+        GenericHID controller,
         DrivetrainSubsystem drivetrainSubsystem) {
+        this.controller = controller;
         this.drivetrainSubsystem = drivetrainSubsystem;
 
+        buttonFactory = new ButtonFactory(controller, () -> buttonLayerToggle);
         // Configure the button bindings
         configureButtonBindings();
     }

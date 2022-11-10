@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final int CONTROLLER_PORT = 0;
+
     public static final class DrivetrainConstants {
         public static final double DEADBAND = 0.0525;
 
