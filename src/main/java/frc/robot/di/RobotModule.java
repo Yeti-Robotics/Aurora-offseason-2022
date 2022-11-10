@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -52,7 +53,9 @@ public class RobotModule {
     public DifferentialDrive provideDifferentialDrive(
         @Named("left drive motors") MotorControllerGroup leftMotors,
         @Named("right drive motors") MotorControllerGroup rightMotors) {
-        return new DifferentialDrive(leftMotors, rightMotors);
+        DifferentialDrive differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
+        differentialDrive.setDeadband(Constants.DrivetrainConstants.DEADBAND);
+        return differentialDrive;
     }
 
     @Provides

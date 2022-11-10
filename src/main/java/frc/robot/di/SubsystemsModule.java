@@ -6,6 +6,7 @@ import dagger.Module;
 import dagger.Provides;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -28,6 +29,7 @@ public class SubsystemsModule {
         DifferentialDrive differentialDrive,
         DifferentialDriveWheelSpeeds wheelSpeeds,
         DifferentialDriveOdometry odometer,
+        @Named("shifter") DoubleSolenoid shifter,
         AHRS gyro) {
         return new DrivetrainSubsystem(
             leftMotor1,
@@ -39,6 +41,7 @@ public class SubsystemsModule {
             differentialDrive,
             wheelSpeeds,
             odometer,
+            shifter,
             gyro
         );
     }

@@ -19,11 +19,11 @@ public class MotorModule {
     @Singleton
     @Named("left drive motor 1")
     public WPI_TalonFX provideLeftMotor1() {
-        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.kLeftMotor1);
+        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.LEFT_MOTOR_1);
 
         motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 70, 80, 0.1));
         motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 80, 0.1));
-        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.kVoltageComp);
+        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.VOLTAGE_COMP);
         motor.enableVoltageCompensation(true);
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
 
@@ -37,11 +37,11 @@ public class MotorModule {
     @Singleton
     @Named("left drive motor 2")
     public WPI_TalonFX provideLeftMotor2() {
-        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.kLeftMotor2);
+        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.LEFT_MOTOR_2);
 
         motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 70, 80, 0.1));
         motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 80, 0.1));
-        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.kVoltageComp);
+        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.VOLTAGE_COMP);
         motor.enableVoltageCompensation(true);
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
 
@@ -55,11 +55,11 @@ public class MotorModule {
     @Singleton
     @Named("right drive motor 1")
     public WPI_TalonFX provideRightMotor1() {
-        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.kRightMotor1);
+        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.RIGHT_MOTOR_1);
 
         motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 70, 80, 0.1));
         motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 80, 0.1));
-        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.kVoltageComp);
+        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.VOLTAGE_COMP);
         motor.enableVoltageCompensation(true);
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
 
@@ -73,11 +73,11 @@ public class MotorModule {
     @Singleton
     @Named("right drive motor 2")
     public WPI_TalonFX provideRightMotor2() {
-        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.kRightMotor2);
+        WPI_TalonFX motor = new WPI_TalonFX(Constants.DrivetrainConstants.RIGHT_MOTOR_2);
 
         motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 70, 80, 0.1));
         motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 80, 0.1));
-        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.kVoltageComp);
+        motor.configVoltageCompSaturation(Constants.DrivetrainConstants.VOLTAGE_COMP);
         motor.enableVoltageCompensation(true);
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 0);
 
