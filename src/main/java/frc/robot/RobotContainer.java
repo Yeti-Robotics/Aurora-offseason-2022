@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,6 +43,8 @@ public class RobotContainer {
         this.controller = controller;
         this.drivetrainSubsystem = drivetrainSubsystem;
 
+        drivetrainSubsystem.setDriveMode(this, DrivetrainSubsystem.DriveMode.CHEEZY);
+
         buttonFactory = new ButtonFactory(controller, () -> buttonLayerToggle);
         // Configure the button bindings
         configureButtonBindings();
@@ -59,6 +62,21 @@ public class RobotContainer {
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
     }
 
+    public double getLeftY() {
+        return -controller.getRawAxis(0);
+    }
+
+    public double getLeftX() {
+        return controller.getRawAxis(1);
+    }
+
+    public double getRightY() {
+        return -controller.getRawAxis(2);
+    }
+
+    public double getRightX() {
+        return controller.getRawAxis(4);
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

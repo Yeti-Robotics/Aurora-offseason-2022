@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -33,26 +34,30 @@ public class DrivetrainSubsystem extends SubsystemBase {
         CHEEZY,
         ARCADE
     }
+
+    private RobotContainer container;
     private DriveMode driveMode;
+    private final GenericHID controller;
     private NeutralMode neutralMode;
 
     private final AHRS gyro;
 
     @Inject
     public DrivetrainSubsystem(
-        @Named("left drive motor 1") WPI_TalonFX leftFalcon1,
-        @Named("left drive motor 1") WPI_TalonFX leftMotor2,
-        @Named("left drive motor 1") WPI_TalonFX rightMotor1,
-        @Named("left drive motor 1") WPI_TalonFX rightMotor2,
+        @Named("left drive motor 1") WPI_TalonFX leftMotor1,
+        @Named("left drive motor 2") WPI_TalonFX leftMotor2,
+        @Named("right drive motor 1") WPI_TalonFX rightMotor1,
+        @Named("right drive motor 2") WPI_TalonFX rightMotor2,
         @Named("left drive motors") MotorControllerGroup leftMotors,
         @Named("right drive motors") MotorControllerGroup rightMotors,
         DifferentialDrive differentialDrive,
         DifferentialDriveWheelSpeeds wheelSpeeds,
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
-        AHRS gyro
+        AHRS gyro,
+        GenericHID controller
         ) {
-        this.leftMotor1 = leftFalcon1;
+        this.leftMotor1 = leftMotor1;
         this.leftMotor2 = leftMotor2;
         this.rightMotor1 = rightMotor1;
         this.rightMotor2 = rightMotor2;
@@ -63,6 +68,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         this.odometer = odometer;
         this.shifter = shifter;
         this.gyro = gyro;
+        this.controller = controller;
 
         setMotorsBrake();
 
@@ -203,7 +209,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return shifter.get();
     }
 
-
+    public void setDriveMode(RobotContainer container, DriveMode mode) {
+        this.container = container;
+        driveMode = mode;
+        switch (driveMode) {
+            case TANK:
+                this.setDefaultCommand(
+                    new RunCommand(() -> tankDrive(container.getLeftY(), container.getRightY()), this));
+                break;
+            case CHEEZY:
+                this.setDefaultCommand(
+                    new RunCommand(() -> cheezyDrive(container.getLeftY(), container.getRightX()), this));
+                break;
+            case ARCADE:
+                this.setDefaultCommand(
+                    new RunCommand(() -> arcadeDrive(container.getLeftY(), container.getRightX()), this));
+                break;
+        }
+    }
 
     public DriveMode getDriveMode() {
         return driveMode;
