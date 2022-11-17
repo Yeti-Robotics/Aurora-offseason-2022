@@ -31,8 +31,7 @@ public class SubsystemsModule {
         DifferentialDriveWheelSpeeds wheelSpeeds,
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
-        AHRS gyro,
-        GenericHID controller) {
+        AHRS gyro) {
         return new DrivetrainSubsystem(
             leftMotor1,
             leftMotor2,
@@ -44,8 +43,7 @@ public class SubsystemsModule {
             wheelSpeeds,
             odometer,
             shifter,
-            gyro,
-            controller
+            gyro
         );
     }
 }

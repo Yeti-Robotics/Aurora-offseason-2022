@@ -19,7 +19,7 @@ import frc.robot.RobotContainer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class DrivetrainSubsystem extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
     private final WPI_TalonFX leftMotor1, leftMotor2, rightMotor1, rightMotor2;
     private final MotorControllerGroup leftMotors, rightMotors;
 
@@ -37,7 +37,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private RobotContainer container;
     private DriveMode driveMode;
-    private final GenericHID controller;
     private NeutralMode neutralMode;
 
     private final AHRS gyro;
@@ -54,8 +53,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         DifferentialDriveWheelSpeeds wheelSpeeds,
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
-        AHRS gyro,
-        GenericHID controller
+        AHRS gyro
         ) {
         this.leftMotor1 = leftMotor1;
         this.leftMotor2 = leftMotor2;
@@ -68,7 +66,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         this.odometer = odometer;
         this.shifter = shifter;
         this.gyro = gyro;
-        this.controller = controller;
 
         setMotorsBrake();
 
@@ -234,6 +231,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public NeutralMode getNeutralMode() {
         return neutralMode;
+    }
+
+    public void close() {
+        shifter.close();
     }
 }
 
