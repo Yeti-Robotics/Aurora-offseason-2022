@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.tests.RESTCommand;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.ButtonFactory;
@@ -32,7 +35,6 @@ public class RobotContainer {
 
     private final ButtonFactory buttonFactory;
     private boolean buttonLayerToggle;
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -43,7 +45,7 @@ public class RobotContainer {
         this.controller = controller;
         this.drivetrainSubsystem = drivetrainSubsystem;
 
-        drivetrainSubsystem.setDriveMode(this, DrivetrainSubsystem.DriveMode.CHEEZY);
+        drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.TANK);
 
         buttonFactory = new ButtonFactory(controller, () -> buttonLayerToggle);
         // Configure the button bindings
@@ -58,6 +60,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        new JoystickButton(controller, 1).whileHeld(new InstantCommand(() -> drivetrainSubsystem.tankDrive(0.5, 0.5), drivetrainSubsystem));
+        new JoystickButton(controller, 2).whenPressed(new InstantCommand(() -> drivetrainSubsystem.setDefaultCommand(new RunCommand(() -> {}, drivetrainSubsystem)), drivetrainSubsystem));
         // Add button to command mappings here.
         // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
     }

@@ -5,11 +5,20 @@
 
 package frc.robot;
 
+import dagger.Lazy;
+import dagger.internal.DaggerCollections;
+import dagger.internal.DaggerGenerated;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.tests.RESTCommand;
+import frc.robot.commands.tests.RESTHandler;
 import frc.robot.di.DaggerRobotComponent;
 import frc.robot.di.RobotComponent;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 import javax.inject.Inject;
 
@@ -24,7 +33,8 @@ public class Robot extends TimedRobot {
     @Inject
     RobotContainer robotContainer;
     private Command autonomousCommand;
-
+    @Inject
+    Lazy<RESTCommand> restCommand;
     public Robot() {
         RobotComponent robotComponent = DaggerRobotComponent.builder().build();
         robotComponent.inject(this);
@@ -79,7 +89,7 @@ public class Robot extends TimedRobot {
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
-            autonomousCommand.schedule();
+            restCommand.get().schedule();
         }
     }
 
@@ -89,6 +99,9 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
+        if (CommandScheduler.getInstance().isScheduled(restCommand.get())) {
+            System.out.println("NOT SCHEDULED");
+        }
     }
 
 
@@ -111,18 +124,23 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
     }
 
-
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+        LiveWindow.setEnabled(false);
+        restCommand.get().schedule(false);
     }
 
 
     /**
      * This method is called periodically during test mode.
      */
+
     @Override
     public void testPeriodic() {
+        if (CommandScheduler.getInstance().isScheduled(restCommand.get())) {
+            System.out.println("NOT SCHEDULED");
+        }
     }
 }

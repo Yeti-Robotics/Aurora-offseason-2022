@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.hal.can.CANMessageNotAllowedException;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 import javax.inject.Inject;
@@ -32,12 +34,13 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
     public enum DriveMode {
         TANK,
         CHEEZY,
-        ARCADE
+        ARCADE,
+        TEST
     }
 
-    private RobotContainer container;
-    private DriveMode driveMode;
+    private DriveMode driveMode = DriveMode.TANK;
     private NeutralMode neutralMode;
+    private GenericHID controller;
 
     private final AHRS gyro;
 
@@ -53,7 +56,8 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         DifferentialDriveWheelSpeeds wheelSpeeds,
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
-        AHRS gyro
+        AHRS gyro,
+        GenericHID controller
         ) {
         this.leftMotor1 = leftMotor1;
         this.leftMotor2 = leftMotor2;
@@ -66,6 +70,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         this.odometer = odometer;
         this.shifter = shifter;
         this.gyro = gyro;
+        this.controller = controller;
 
         setMotorsBrake();
 
@@ -79,6 +84,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
     @Override
     public void periodic() {
         odometer.update(gyro.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+        System.out.println(System.identityHashCode(this));
     }
 
     public void setMaxOutput(double maxOutput) {
@@ -206,28 +212,31 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         return shifter.get();
     }
 
-    public void setDriveMode(RobotContainer container, DriveMode mode) {
-        this.container = container;
+    public void setDriveMode(DriveMode mode) {
         driveMode = mode;
+        System.out.println(System.identityHashCode(this));
         switch (driveMode) {
             case TANK:
                 this.setDefaultCommand(
-                    new RunCommand(() -> tankDrive(container.getLeftY(), container.getRightY()), this));
+                    new RunCommand(() -> tankDrive(controller.getRawAxis(0), controller.getRawAxis(2)), this));
                 break;
             case CHEEZY:
                 this.setDefaultCommand(
-                    new RunCommand(() -> cheezyDrive(container.getLeftY(), container.getRightX()), this));
+                    new RunCommand(() -> cheezyDrive(controller.getRawAxis(0), controller.getRawAxis(3)), this));
                 break;
             case ARCADE:
                 this.setDefaultCommand(
-                    new RunCommand(() -> arcadeDrive(container.getLeftY(), container.getRightX()), this));
+                    new RunCommand(() -> arcadeDrive(controller.getRawAxis(0), controller.getRawAxis(3)), this));
                 break;
+            case TEST:
+                this.setDefaultCommand(new RunCommand(() -> {}, this));
         }
     }
 
     public DriveMode getDriveMode() {
         return driveMode;
     }
+
 
     public NeutralMode getNeutralMode() {
         return neutralMode;
