@@ -1,4 +1,4 @@
-package frc.robot.commands.tests.testAnnotations;
+package frc.robot.commands.rests.restAnnotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface After {
+public @interface Before {
 }

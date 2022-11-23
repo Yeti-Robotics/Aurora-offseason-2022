@@ -3,10 +3,10 @@ package frc.robot.di;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
-import frc.robot.commands.tests.RESTCommand;
-import frc.robot.commands.tests.RESTHandler;
-import frc.robot.commands.tests.DrivetrainREST;
-import frc.robot.commands.tests.testAnnotations.RobotEnabledSelfTest;
+import frc.robot.commands.rests.RESTCommand;
+import frc.robot.commands.rests.restUtils.RESTHandler;
+import frc.robot.commands.rests.DrivetrainREST;
+import frc.robot.commands.rests.restAnnotations.RobotEnabledSelfTest;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import javax.inject.Singleton;

@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 public interface RobotComponent {
     @Component.Builder
     interface Builder {
-        public RobotComponent build();
+        RobotComponent build();
     }
 
     void inject(Robot robot);

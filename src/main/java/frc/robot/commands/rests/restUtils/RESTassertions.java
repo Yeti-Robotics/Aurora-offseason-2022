@@ -1,4 +1,4 @@
-package frc.robot.commands.tests;
+package frc.robot.commands.rests.restUtils;
 
 public class RESTassertions {
     private static void fail() {

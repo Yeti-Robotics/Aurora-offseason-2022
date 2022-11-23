@@ -1,11 +1,11 @@
-package frc.robot.commands.tests;
+package frc.robot.commands.rests.restUtils;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.commands.tests.testAnnotations.*;
+import frc.robot.commands.rests.restAnnotations.*;
 
 import javax.inject.Inject;
 import java.lang.annotation.AnnotationTypeMismatchException;
@@ -16,8 +16,8 @@ import java.util.*;
 import static edu.wpi.first.util.sendable.SendableRegistry.addChild;
 
 public class RESTHandler implements Sendable {
-    private List<Object> rests;
-    private HashMap<Object, List<Method>> restTests;
+    private final List<Object> rests;
+    private final HashMap<Object, List<Method>> restTests;
 
     private Object currentREST;
     private List<Method> currentTestList;
@@ -40,15 +40,14 @@ public class RESTHandler implements Sendable {
         this.rests = rests;
         restTests = new HashMap<>();
 
-        for (int i = 0; i < rests.size(); i++) {
-            Object rest = rests.get(i);
+        for (Object rest : rests) {
             if (Objects.isNull(rest)) {
                 throw new NullPointerException("SubsystemTest for SubsystemTestHandler is null");
             }
 
             Class<?> restClass = rest.getClass();
             if (!restClass.isAnnotationPresent(RobotEnabledSelfTest.class)) {
-                throw new  AnnotationTypeMismatchException(null, "This class is not annotated as a SubsystemTest");
+                throw new AnnotationTypeMismatchException(null, "This class is not annotated as a SubsystemTest");
             }
 
             restTests.put(rest, new ArrayList<>());

@@ -35,12 +35,11 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         TANK,
         CHEEZY,
         ARCADE,
-        TEST
     }
 
     private DriveMode driveMode = DriveMode.TANK;
     private NeutralMode neutralMode;
-    private GenericHID controller;
+    private final GenericHID controller;
 
     private final AHRS gyro;
 
@@ -84,7 +83,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
     @Override
     public void periodic() {
         odometer.update(gyro.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
-        System.out.println(System.identityHashCode(this));
     }
 
     public void setMaxOutput(double maxOutput) {
@@ -214,7 +212,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
 
     public void setDriveMode(DriveMode mode) {
         driveMode = mode;
-        System.out.println(System.identityHashCode(this));
         switch (driveMode) {
             case TANK:
                 this.setDefaultCommand(
@@ -228,8 +225,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
                 this.setDefaultCommand(
                     new RunCommand(() -> arcadeDrive(controller.getRawAxis(0), controller.getRawAxis(3)), this));
                 break;
-            case TEST:
-                this.setDefaultCommand(new RunCommand(() -> {}, this));
         }
     }
 

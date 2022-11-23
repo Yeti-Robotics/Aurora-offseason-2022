@@ -1,13 +1,13 @@
-package frc.robot.commands.tests;
+package frc.robot.commands.rests;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.commands.rests.restUtils.RESTHandler;
 
 import javax.inject.Inject;
 
 
 public class RESTCommand extends CommandBase {
-    private RESTHandler handler;
+    private final RESTHandler handler;
 
     @Inject
     public RESTCommand(RESTHandler handler) {
@@ -41,7 +41,7 @@ public class RESTCommand extends CommandBase {
 
     private void updateRequirements() {
         if (handler.isNewREST()) {
-            m_requirements.removeAll(handler.getCurrentRequirements());
+            handler.getCurrentRequirements().forEach(m_requirements::remove);
             handler.updateRequirements();
             m_requirements.addAll(handler.getCurrentRequirements());
         }
