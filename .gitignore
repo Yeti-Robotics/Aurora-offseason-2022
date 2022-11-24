@@ -342,3 +342,6 @@ bin/
 
 # Sysid
 .sysid
+
+# Glass
+.glass
