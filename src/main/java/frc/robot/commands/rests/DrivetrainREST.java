@@ -34,7 +34,7 @@ public class DrivetrainREST {
             RESTHandler.setFinished(RESTHandler.hasElapsed(5.0));
         });
 
-        RESTHandler.setResults(() -> {
+        RESTHandler.setEnd(() -> {
             drivetrainSubsystem.stopDrive();
             assertEquals(drivetrainSubsystem.getLeftEncoderDistance() > 0);
         });

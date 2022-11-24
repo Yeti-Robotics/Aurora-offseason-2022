@@ -1,8 +1,11 @@
 package frc.robot.commands.rests.restUtils;
 
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.rests.restAnnotations.*;
@@ -11,9 +14,10 @@ import javax.inject.Inject;
 import java.lang.annotation.AnnotationTypeMismatchException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
-
-import static edu.wpi.first.util.sendable.SendableRegistry.addChild;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 public class RESTHandler implements Sendable {
     private final List<Object> rests;
@@ -23,10 +27,17 @@ public class RESTHandler implements Sendable {
     private List<Method> currentTestList;
     private Method currentTest;
     private List<Subsystem> currentRequirements;
-    private static Runnable init = () -> {};
-    private static Runnable execute = () -> {};
-    private static Runnable results = () -> {};
+    private static Runnable init = () -> {
+    };
+    private static Runnable execute = () -> {
+    };
+    private static Runnable end = () -> {
+    };
 
+    private final String[][] results;
+
+    private DataLog log;
+    private StringLogEntry resultLog;
     private static Timer timer;
 
     private boolean newREST = true;
@@ -39,7 +50,9 @@ public class RESTHandler implements Sendable {
     public RESTHandler(List<Object> rests) {
         this.rests = rests;
         restTests = new HashMap<>();
+        results = new String[rests.size()][];
 
+        int i = 0;
         for (Object rest : rests) {
             if (Objects.isNull(rest)) {
                 throw new NullPointerException("SubsystemTest for SubsystemTestHandler is null");
@@ -58,6 +71,8 @@ public class RESTHandler implements Sendable {
                     restTests.get(rest).add(method);
                 }
             }
+            results[i] = new String[restTests.get(rest).size()];
+            i++;
         }
 
         currentREST = rests.get(restIndex);
@@ -68,32 +83,48 @@ public class RESTHandler implements Sendable {
     }
 
     public void initialize() {
+        DataLogManager.start();
+        log = DataLogManager.getLog();
+
         setupREST();
 
-        SendableRegistry.addLW(this, "Robot Enabled Self Test");
+        SendableRegistry.addLW(this, "RESTHandler");
         timer.start();
     }
 
     public void initTest() {
         init.run();
     }
+
     public void runTest() {
         execute.run();
     }
 
     public void handleResults() {
+        String result;
         try {
-            results.run();
-            addChild(this, currentREST.getClass().getName() + " (" + currentTest.getName() + ") :: PASSED");
+            end.run();
+            result = String.format("%s :: PASSED\n", currentTest.getName().toUpperCase());
+            results[restIndex][testIndex] = result.stripTrailing();
+            resultLog.append(result);
         } catch (Exception e) {
-            addChild(this, currentREST.getClass().getName() + " (" + currentTest.getName() + ") :: FAILED");
+            result = String.format("%s :: FAILED\n", currentTest.getName().toUpperCase());
+            results[restIndex][testIndex] = result.stripTrailing();
+            resultLog.append(result + "\t\t" + e.getLocalizedMessage());
         }
     }
 
+    public String[] getRESTResults(int restIndex) {
+        return results[restIndex];
+    }
+
     public void reset() {
-        init = () -> {};
-        execute = () -> {};
-        results = () -> {};
+        init = () -> {
+        };
+        execute = () -> {
+        };
+        end = () -> {
+        };
 
         testFinished = true;
         newTest = true;
@@ -125,12 +156,13 @@ public class RESTHandler implements Sendable {
             if (method.isAnnotationPresent(Before.class)) {
                 method.setAccessible(true);
                 invokeMethod(method, currentREST);
-                return;
+                break;
             }
         }
+        resultLog = new StringLogEntry(log, "RESTResult/" + currentREST.getClass().getSimpleName());
     }
 
-    public void shutdownREST() {
+    private void shutdownREST() {
         for (Method method : currentREST.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(After.class)) {
                 method.setAccessible(true);
@@ -201,6 +233,7 @@ public class RESTHandler implements Sendable {
     public static boolean hasElapsed(double seconds) {
         return timer.hasElapsed(seconds);
     }
+
     public static void setInit(Runnable runnable) {
         init = runnable;
     }
@@ -209,8 +242,8 @@ public class RESTHandler implements Sendable {
         execute = runnable;
     }
 
-    public static void setResults(Runnable runnable) {
-        results = runnable;
+    public static void setEnd(Runnable runnable) {
+        end = runnable;
     }
 
     public static void setFinished(boolean finish) {
@@ -219,7 +252,10 @@ public class RESTHandler implements Sendable {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Robot Enabled Self Test");
+        builder.setSmartDashboardType("RESTHandler");
+        for (Object rest : rests) {
+            builder.addStringArrayProperty(rest.getClass().getSimpleName(), () -> getRESTResults(restIndex), null);
+        }
     }
 }
 
