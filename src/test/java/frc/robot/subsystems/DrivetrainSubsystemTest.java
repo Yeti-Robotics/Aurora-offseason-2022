@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.Constants;
@@ -32,6 +33,7 @@ public class DrivetrainSubsystemTest {
     DifferentialDriveOdometry odometer;
 
     AHRS gyro = mock(AHRS.class);
+    GenericHID controller = mock(GenericHID.class);
 
     DoubleSolenoid shifter;
 
@@ -64,7 +66,8 @@ public class DrivetrainSubsystemTest {
             wheelSpeeds,
             odometer,
             shifter,
-            gyro);
+            gyro,
+            controller);
     }
 
     @AfterEach
