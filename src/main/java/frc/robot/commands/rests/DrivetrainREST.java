@@ -1,6 +1,6 @@
 package frc.robot.commands.rests;
 
-import static frc.robot.commands.rests.restUtils.RESTassertions.*;
+import static frc.robot.commands.rests.restUtils.RESTAssertions.*;
 
 import frc.robot.commands.rests.restAnnotations.*;
 import frc.robot.commands.rests.restUtils.RESTHandler;
@@ -36,7 +36,7 @@ public class DrivetrainREST {
 
         RESTHandler.setEnd(() -> {
             drivetrainSubsystem.stopDrive();
-            assertEquals(drivetrainSubsystem.getLeftEncoderDistance() > 0);
+            assertTrue(drivetrainSubsystem.getLeftEncoderDistance() > 0);
         });
     }
 }
