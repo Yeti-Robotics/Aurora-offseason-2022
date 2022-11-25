@@ -345,3 +345,6 @@ bin/
 
 # Glass
 .glass
+
+# DataLogTool
+.datalogtool
