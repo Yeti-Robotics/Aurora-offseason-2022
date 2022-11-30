@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.utils.ButtonHelper;
+import frc.robot.utils.controllerUtils.ButtonHelper;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Inject;
 
@@ -25,25 +26,24 @@ import javax.inject.Inject;
 public class RobotContainer {
     private RobotComponent robotComponent;
 
-    public final GenericHID controller;
+    public final ControllerContainer controllerContainer;
+    private final ButtonHelper buttonHelper;
     public final DrivetrainSubsystem drivetrainSubsystem;
-
-    private final ButtonHelper buttonFactory;
-    private boolean buttonLayerToggle;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     @Inject
     public RobotContainer(
-        GenericHID controller,
+        ControllerContainer controllerContainer,
         DrivetrainSubsystem drivetrainSubsystem) {
-        this.controller = controller;
+        this.controllerContainer = controllerContainer;
         this.drivetrainSubsystem = drivetrainSubsystem;
 
-        drivetrainSubsystem.setDriveMode(this, DrivetrainSubsystem.DriveMode.CHEEZY);
+        drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.CHEEZY);
 
-        buttonFactory = new ButtonHelper(controller, () -> buttonLayerToggle);
+        buttonHelper = new ButtonHelper(controllerContainer.getControllers());
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -56,25 +56,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Add button to command mappings here.
-        // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
     }
 
-    public double getLeftY() {
-        return -controller.getRawAxis(0);
-    }
-
-    public double getLeftX() {
-        return controller.getRawAxis(1);
-    }
-
-    public double getRightY() {
-        return -controller.getRawAxis(2);
-    }
-
-    public double getRightX() {
-        return controller.getRawAxis(4);
-    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
