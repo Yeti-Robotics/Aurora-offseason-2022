@@ -8,6 +8,8 @@ package frc.robot;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
+import java.util.Map;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -17,7 +19,18 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int CONTROLLER_PORT = 0;
+    public static final class OIConstants {
+        public static final Map<Integer, ControllerType> CONTROLLERS = Map.of(
+            0, ControllerType.CUSTOM
+        );
+        public static final int CONTROLLER_COUNT = CONTROLLERS.size();
+
+        public enum ControllerType {
+            CUSTOM,
+            XBOX
+        }
+
+    }
 
     public static final class DrivetrainConstants {
         public static final double DEADBAND = 0.0525;

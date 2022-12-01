@@ -8,13 +8,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.RobotContainer;
+import frc.robot.utils.controllerUtils.Controller;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,9 +35,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         ARCADE
     }
 
-    private RobotContainer container;
     private DriveMode driveMode;
-    private final GenericHID controller;
+    private final ControllerContainer controllerContainer;
+    private final Controller controller;
     private NeutralMode neutralMode;
 
     private final AHRS gyro;
@@ -55,7 +55,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
         AHRS gyro,
-        GenericHID controller
+        ControllerContainer controllerContainer
         ) {
         this.leftMotor1 = leftMotor1;
         this.leftMotor2 = leftMotor2;
@@ -68,7 +68,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         this.odometer = odometer;
         this.shifter = shifter;
         this.gyro = gyro;
-        this.controller = controller;
+        this.controllerContainer = controllerContainer;
+
+        controller = controllerContainer.get(0);
 
         setMotorsBrake();
 
@@ -209,21 +211,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return shifter.get();
     }
 
-    public void setDriveMode(RobotContainer container, DriveMode mode) {
-        this.container = container;
+    public void setDriveMode(DriveMode mode) {
         driveMode = mode;
         switch (driveMode) {
             case TANK:
                 this.setDefaultCommand(
-                    new RunCommand(() -> tankDrive(container.getLeftY(), container.getRightY()), this));
+                    new RunCommand(() -> tankDrive(controller.getLeftY(), controller.getRightY()), this));
                 break;
             case CHEEZY:
                 this.setDefaultCommand(
-                    new RunCommand(() -> cheezyDrive(container.getLeftY(), container.getRightX()), this));
+                    new RunCommand(() -> cheezyDrive(controller.getLeftY(), controller.getRightX()), this));
                 break;
             case ARCADE:
                 this.setDefaultCommand(
-                    new RunCommand(() -> arcadeDrive(container.getLeftY(), container.getRightX()), this));
+                    new RunCommand(() -> arcadeDrive(controller.getLeftY(), controller.getRightX()), this));
                 break;
         }
     }

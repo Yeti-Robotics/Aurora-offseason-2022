@@ -6,13 +6,12 @@ import dagger.Module;
 import dagger.Provides;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.utils.ButtonFactory;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -22,18 +21,18 @@ public class RobotModule {
     @Provides
     @Singleton
     public RobotContainer providesRobotContainer(
-        GenericHID controller,
+        ControllerContainer controllerContainer,
         DrivetrainSubsystem drivetrainSubsystem) {
         return new RobotContainer(
-            controller,
+            controllerContainer,
             drivetrainSubsystem
         );
     }
 
     @Provides
     @Singleton
-    public GenericHID providesController() {
-        return new GenericHID(Constants.CONTROLLER_PORT);
+    public ControllerContainer providesController() {
+        return new ControllerContainer();
     }
 
     /****** Drivetrain Subsystem Dependencies ******/
