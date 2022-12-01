@@ -4,24 +4,22 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.hal.can.CANMessageNotAllowedException;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
+import frc.robot.utils.controllerUtils.Controller;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
+public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable {
     private final WPI_TalonFX leftMotor1, leftMotor2, rightMotor1, rightMotor2;
     private final MotorControllerGroup leftMotors, rightMotors;
 
@@ -31,17 +29,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
 
     private final DoubleSolenoid shifter;
 
-    public enum DriveMode {
-        TANK,
-        CHEEZY,
-        ARCADE,
-    }
-
-    private DriveMode driveMode = DriveMode.TANK;
-    private NeutralMode neutralMode;
-    private final GenericHID controller;
-
-    private final AHRS gyro;
+    private final ControllerContainer controllerContainer;
+    private final Controller controller;
+    private DriveMode driveMode;
 
     @Inject
     public DrivetrainSubsystem(
@@ -56,7 +46,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
         AHRS gyro,
-        GenericHID controller
+        ControllerContainer controllerContainer
         ) {
         this.leftMotor1 = leftMotor1;
         this.leftMotor2 = leftMotor2;
@@ -69,7 +59,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         this.odometer = odometer;
         this.shifter = shifter;
         this.gyro = gyro;
-        this.controller = controller;
+        this.controllerContainer = controllerContainer;
+
+        controller = controllerContainer.get(0);
 
         setMotorsBrake();
 
@@ -78,6 +70,28 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         resetOdometry(new Pose2d());
 
         shiftUp();
+    }
+
+    private NeutralMode neutralMode;
+
+    private final AHRS gyro;
+
+    public void setDriveMode(DriveMode mode) {
+        driveMode = mode;
+        switch (driveMode) {
+            case TANK:
+                this.setDefaultCommand(
+                    new RunCommand(() -> tankDrive(controller.getLeftY(), controller.getRightY()), this));
+                break;
+            case CHEEZY:
+                this.setDefaultCommand(
+                    new RunCommand(() -> cheezyDrive(controller.getLeftY(), controller.getRightX()), this));
+                break;
+            case ARCADE:
+                this.setDefaultCommand(
+                    new RunCommand(() -> arcadeDrive(controller.getLeftY(), controller.getRightX()), this));
+                break;
+        }
     }
 
     @Override
@@ -210,28 +224,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable{
         return shifter.get();
     }
 
-    public void setDriveMode(DriveMode mode) {
-        driveMode = mode;
-        switch (driveMode) {
-            case TANK:
-                this.setDefaultCommand(
-                    new RunCommand(() -> tankDrive(controller.getRawAxis(0), controller.getRawAxis(2)), this));
-                break;
-            case CHEEZY:
-                this.setDefaultCommand(
-                    new RunCommand(() -> cheezyDrive(controller.getRawAxis(0), controller.getRawAxis(3)), this));
-                break;
-            case ARCADE:
-                this.setDefaultCommand(
-                    new RunCommand(() -> arcadeDrive(controller.getRawAxis(0), controller.getRawAxis(3)), this));
-                break;
-        }
+    public enum DriveMode {
+        TANK,
+        CHEEZY,
+        ARCADE
     }
 
     public DriveMode getDriveMode() {
         return driveMode;
     }
-
 
     public NeutralMode getNeutralMode() {
         return neutralMode;

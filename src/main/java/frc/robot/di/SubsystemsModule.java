@@ -7,10 +7,10 @@ import dagger.Provides;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -31,7 +31,7 @@ public class SubsystemsModule {
         DifferentialDriveOdometry odometer,
         @Named("shifter") DoubleSolenoid shifter,
         AHRS gyro,
-        GenericHID controller) {
+        ControllerContainer controller) {
         return new DrivetrainSubsystem(
             leftMotor1,
             leftMotor2,

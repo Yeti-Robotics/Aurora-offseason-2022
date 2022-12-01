@@ -9,11 +9,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.utils.ButtonFactory;
+import frc.robot.utils.controllerUtils.ButtonHelper;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Inject;
 
@@ -27,24 +26,24 @@ import javax.inject.Inject;
 public class RobotContainer {
     private RobotComponent robotComponent;
 
-    public final GenericHID controller;
+    public final ControllerContainer controllerContainer;
+    private final ButtonHelper buttonHelper;
     public final DrivetrainSubsystem drivetrainSubsystem;
 
-    private final ButtonFactory buttonFactory;
-    private boolean buttonLayerToggle;
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     @Inject
     public RobotContainer(
-        GenericHID controller,
+        ControllerContainer controllerContainer,
         DrivetrainSubsystem drivetrainSubsystem) {
-        this.controller = controller;
+        this.controllerContainer = controllerContainer;
         this.drivetrainSubsystem = drivetrainSubsystem;
 
-        drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.TANK);
+        drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.CHEEZY);
 
-        buttonFactory = new ButtonFactory(controller, () -> buttonLayerToggle);
+        buttonHelper = new ButtonHelper(controllerContainer.getControllers());
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -57,27 +56,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(controller, 1).whileHeld(new InstantCommand(() -> drivetrainSubsystem.tankDrive(0.5, 0.5), drivetrainSubsystem));
-        new JoystickButton(controller, 2).whenPressed(new InstantCommand(() -> drivetrainSubsystem.setDefaultCommand(new RunCommand(() -> {}, drivetrainSubsystem)), drivetrainSubsystem));
-        // Add button to command mappings here.
-        // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
     }
 
-    public double getLeftY() {
-        return -controller.getRawAxis(0);
-    }
-
-    public double getLeftX() {
-        return controller.getRawAxis(1);
-    }
-
-    public double getRightY() {
-        return -controller.getRawAxis(2);
-    }
-
-    public double getRightX() {
-        return controller.getRawAxis(4);
-    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
