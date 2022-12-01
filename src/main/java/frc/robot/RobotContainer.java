@@ -9,10 +9,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.DriveForwardCommand;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.controllerUtils.ButtonHelper;
 import frc.robot.utils.controllerUtils.ControllerContainer;
+import frc.robot.utils.controllerUtils.MultiButton;
 
 import javax.inject.Inject;
 
@@ -43,9 +45,6 @@ public class RobotContainer {
         drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.CHEEZY);
 
         buttonHelper = new ButtonHelper(controllerContainer.getControllers());
-
-        // Configure the button bindings
-        configureButtonBindings();
     }
 
 
@@ -55,7 +54,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    private void configureButtonBindings() {
+    public void configureButtonBindings() {
+        buttonHelper.createButton(1, 0, robotComponent.commands().get(DriveForwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
     }
 
 
