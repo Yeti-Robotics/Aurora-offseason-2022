@@ -8,6 +8,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.commands.rests.RESTCommand;
 import frc.robot.commands.rests.restAnnotations.*;
 
 import javax.inject.Inject;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class RESTHandler implements Sendable {
+public class RESTHandler implements Sendable, AutoCloseable {
     private final List<Object> rests;
     private final HashMap<Object, List<Method>> restTests;
 
@@ -250,12 +251,22 @@ public class RESTHandler implements Sendable {
         testFinished = finish;
     }
 
+    public RESTCommand getCommand() {
+        return new RESTCommand(this);
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("RESTHandler");
         for (Object rest : rests) {
             builder.addStringArrayProperty(rest.getClass().getSimpleName(), () -> getRESTResults(restIndex), null);
         }
+    }
+
+    @Override
+    public void close() {
+        SendableRegistry.remove(this);
+        log.close();
     }
 }
 

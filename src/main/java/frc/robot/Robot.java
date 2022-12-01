@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.rests.RESTCommand;
+import frc.robot.commands.rests.restUtils.RESTHandler;
 import frc.robot.di.DaggerRobotComponent;
 import frc.robot.di.RobotComponent;
 
@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
     RobotContainer robotContainer;
     private Command autonomousCommand;
     @Inject
-    Lazy<RESTCommand> restCommand;
+    Lazy<RESTHandler> restHandler;
     public Robot() {
         RobotComponent robotComponent = DaggerRobotComponent.builder().build();
         robotComponent.inject(this);
@@ -119,7 +119,7 @@ public class Robot extends TimedRobot {
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
         LiveWindow.setEnabled(false);
-        restCommand.get().schedule(false);
+        restHandler.get().getCommand().schedule(false);
     }
 
 
@@ -129,5 +129,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void testExit() {
+        restHandler.get().close();
     }
 }
