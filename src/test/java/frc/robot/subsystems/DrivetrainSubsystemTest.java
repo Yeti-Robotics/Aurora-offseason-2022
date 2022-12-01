@@ -1,8 +1,5 @@
 package frc.robot.subsystems;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.HAL;
@@ -10,13 +7,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import frc.robot.Constants;
+import frc.robot.utils.controllerUtils.ControllerContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DrivetrainSubsystemTest {
     DrivetrainSubsystem drivetrainSubsystem;
@@ -33,7 +35,7 @@ public class DrivetrainSubsystemTest {
     DifferentialDriveOdometry odometer;
 
     AHRS gyro = mock(AHRS.class);
-    GenericHID controller = mock(GenericHID.class);
+    ControllerContainer controller = mock(ControllerContainer.class);
 
     DoubleSolenoid shifter;
 
