@@ -116,7 +116,7 @@ public class MultiButton {
     }
 
     public void setButtonLayer(int layer) {
-        buttonLayer = (layer - 1) % buttonActions.length;
+        buttonLayer = layer % buttonActions.length;
     }
 
     public byte getButtonID() {
