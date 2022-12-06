@@ -65,7 +65,15 @@ public class RobotContainer {
         buttonHelper.createButton(1, 0, commands.get(DriveForwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
         buttonHelper.createButton(1, 1, commands.get(DriveBackwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
         buttonHelper.createButton(2, 0,
-            new InstantCommand(() -> buttonHelper.setButtonLayer(ButtonHelper.ButtonType.BUTTON, 1, 1)), MultiButton.RunCondition.WHEN_PRESSED);
+            new InstantCommand(() ->
+            {
+                MultiButton button = buttonHelper.getButton(0, ButtonHelper.ButtonType.BUTTON, 1);
+                if (button.getButtonLayer() == 0) {
+                    button.setButtonLayer(1);
+                } else {
+                    button.setButtonLayer(0);
+                }
+            }), MultiButton.RunCondition.WHEN_PRESSED);
     }
 
 

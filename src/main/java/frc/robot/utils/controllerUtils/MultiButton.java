@@ -66,6 +66,7 @@ public class MultiButton {
     }
 
     public void setButtonLayer(int layer) {
+        isLayersSynced = false;
         buttonLayer = layer % buttonActions.length;
     }
 

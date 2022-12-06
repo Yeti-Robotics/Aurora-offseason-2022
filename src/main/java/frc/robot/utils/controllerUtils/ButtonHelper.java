@@ -133,16 +133,20 @@ public class ButtonHelper {
         MultiButton.syncLayers(layer);
     }
 
-    public void setButtonLayer(ButtonType type, int port, int layer) {
-        buttonMap.get(controller).get(getButtonID(type, port)).setButtonLayer(layer);
+    public void setButtonLayer(int controllerNumber, ButtonType type, int port, int layer) {
+        buttonMap.get(controllers[controllerNumber]).get(getButtonID(type, port)).setButtonLayer(layer);
     }
 
-    public int getButtonLayer(ButtonType type, int port) {
-        return buttonMap.get(controller).get(getButtonID(type, port)).getButtonLayer();
+    public int getButtonLayer(int controllerNumber, ButtonType type, int port) {
+        return buttonMap.get(controllers[controllerNumber]).get(getButtonID(type, port)).getButtonLayer();
     }
 
     public HashMap<Byte, MultiButton> getButtonMap(int controllerNumber) {
         return buttonMap.get(controllers[controllerNumber]);
+    }
+
+    public MultiButton getButton(int controllerNumber, ButtonType type, int port) {
+        return buttonMap.get(controllers[controllerNumber]).get(getButtonID(type, port));
     }
 
     public byte getButtonID(ButtonType type, Integer port) {
