@@ -33,56 +33,6 @@ public class MultiButton {
         syncLayer = layer;
     }
 
-    private static BiConsumer<Boolean, Boolean> defineButton(Command command, RunCondition runCondition) {
-        BiConsumer<Boolean, Boolean> biConsumer;
-        switch (runCondition) {
-            case WHEN_PRESSED:
-                biConsumer = (pressed, pressedLast) -> {
-                    if (!pressedLast && pressed) {
-                        command.schedule();
-                    }
-                };
-                break;
-            case WHEN_RELEASED:
-                biConsumer = (pressed, pressedLast) -> {
-                    if (pressedLast && !pressed) {
-                        command.schedule();
-                    }
-                };
-                break;
-            case WHILE_HELD:
-                biConsumer = (pressed, pressedLast) -> {
-                    if (pressed) {
-                        command.schedule();
-                    } else if (!pressedLast) {
-                        command.cancel();
-                    }
-                };
-                break;
-            case TOGGLE_WHEN_PRESSED:
-                biConsumer = (pressed, pressedLast) -> {
-                    if (!pressedLast && pressed) {
-                        if (command.isScheduled()) {
-                            command.cancel();
-                        } else {
-                            command.schedule();
-                        }
-                    }
-                };
-                break;
-            case CANCEL_WHEN_PRESSED:
-                biConsumer = (pressed, pressedLast) -> {
-                    if (!pressedLast && pressed) {
-                        command.cancel();
-                    }
-                };
-                break;
-            default:
-                biConsumer = null;
-                break;
-        }
-        return biConsumer;
-    }
 
     public void addLayer(int layer, Command command, RunCondition runCondition) {
         if (layerCount <= layer) {
@@ -134,5 +84,63 @@ public class MultiButton {
         WHILE_HELD,
         TOGGLE_WHEN_PRESSED,
         CANCEL_WHEN_PRESSED
+    }
+
+    private static BiConsumer<Boolean, Boolean> defineButton(Command command, RunCondition runCondition) {
+        BiConsumer<Boolean, Boolean> biConsumer;
+
+        if (command == null || runCondition == null) {
+            biConsumer = (aBoolean, bBoolean) -> {
+            };
+            return biConsumer;
+        }
+
+        switch (runCondition) {
+            case WHEN_PRESSED:
+                biConsumer = (pressed, pressedLast) -> {
+                    if (!pressedLast && pressed) {
+                        command.schedule();
+                    }
+                };
+                break;
+            case WHEN_RELEASED:
+                biConsumer = (pressed, pressedLast) -> {
+                    if (pressedLast && !pressed) {
+                        command.schedule();
+                    }
+                };
+                break;
+            case WHILE_HELD:
+                biConsumer = (pressed, pressedLast) -> {
+                    if (pressed) {
+                        command.schedule();
+                    } else if (!pressedLast) {
+                        command.cancel();
+                    }
+                };
+                break;
+            case TOGGLE_WHEN_PRESSED:
+                biConsumer = (pressed, pressedLast) -> {
+                    if (!pressedLast && pressed) {
+                        if (command.isScheduled()) {
+                            command.cancel();
+                        } else {
+                            command.schedule();
+                        }
+                    }
+                };
+                break;
+            case CANCEL_WHEN_PRESSED:
+                biConsumer = (pressed, pressedLast) -> {
+                    if (!pressedLast && pressed) {
+                        command.cancel();
+                    }
+                };
+                break;
+            default:
+                biConsumer = null;
+                break;
+        }
+        return biConsumer;
     }
 }
