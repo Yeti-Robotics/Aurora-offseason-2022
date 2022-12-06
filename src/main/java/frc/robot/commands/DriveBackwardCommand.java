@@ -22,12 +22,13 @@ public class DriveBackwardCommand extends CommandBase {
     @Override
     public void initialize() {
         timer.start();
+        timer.reset();
         drivetrainSubsystem.tankDrive(-0.5, -0.5);
     }
 
     @Override
     public void execute() {
-
+        drivetrainSubsystem.tankDrive(0.5, 0.5);
     }
 
     @Override

@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -15,6 +16,7 @@ import frc.robot.utils.controllerUtils.ControllerContainer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Map;
 
 @Module
 public class RobotModule {
@@ -22,10 +24,12 @@ public class RobotModule {
     @Singleton
     public RobotContainer providesRobotContainer(
         ControllerContainer controllerContainer,
-        DrivetrainSubsystem drivetrainSubsystem) {
+        DrivetrainSubsystem drivetrainSubsystem,
+        Map<Class<?>, CommandBase> commands) {
         return new RobotContainer(
             controllerContainer,
-            drivetrainSubsystem
+            drivetrainSubsystem,
+            commands
         );
     }
 

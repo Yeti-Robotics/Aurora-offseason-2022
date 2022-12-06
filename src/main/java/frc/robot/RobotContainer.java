@@ -8,7 +8,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.DriveBackwardCommand;
 import frc.robot.commands.DriveForwardCommand;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -17,6 +19,7 @@ import frc.robot.utils.controllerUtils.ControllerContainer;
 import frc.robot.utils.controllerUtils.MultiButton;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 
 /**
@@ -32,15 +35,19 @@ public class RobotContainer {
     private final ButtonHelper buttonHelper;
     public final DrivetrainSubsystem drivetrainSubsystem;
 
+    private final Map<Class<?>, CommandBase> commands;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     @Inject
     public RobotContainer(
         ControllerContainer controllerContainer,
-        DrivetrainSubsystem drivetrainSubsystem) {
+        DrivetrainSubsystem drivetrainSubsystem,
+        Map<Class<?>, CommandBase> commands) {
         this.controllerContainer = controllerContainer;
         this.drivetrainSubsystem = drivetrainSubsystem;
+        this.commands = commands;
 
         drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.CHEEZY);
 
@@ -55,7 +62,10 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     public void configureButtonBindings() {
-        buttonHelper.createButton(1, 0, robotComponent.commands().get(DriveForwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
+        buttonHelper.createButton(1, 0, commands.get(DriveForwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
+        buttonHelper.createButton(1, 1, commands.get(DriveBackwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
+        buttonHelper.createButton(2, 0,
+            new InstantCommand(() -> buttonHelper.setButtonLayer(ButtonHelper.ButtonType.BUTTON, 1, 1)), MultiButton.RunCondition.WHEN_PRESSED);
     }
 
 
