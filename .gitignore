@@ -342,3 +342,9 @@ bin/
 
 # Sysid
 .sysid
+
+# Glass
+.glass
+
+# DataLogTool
+.datalogtool

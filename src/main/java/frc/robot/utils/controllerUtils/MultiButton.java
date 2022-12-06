@@ -33,8 +33,69 @@ public class MultiButton {
         syncLayer = layer;
     }
 
+
+    public void addLayer(int layer, Command command, RunCondition runCondition) {
+        if (layerCount <= layer) {
+            layerCount = layer + 1;
+            buttonActions = Arrays.copyOf(buttonActions, layerCount);
+        }
+
+        buttonActions[layer] = defineButton(command, runCondition);
+
+        int i = 0;
+        for (Object o : buttonActions) {
+            if (o == null) {
+                buttonActions[i] = (aBoolean, aBoolean2) -> {
+                };
+            }
+            i++;
+        }
+    }
+
+    public void updateButton() {
+        if (isLayersSynced) {
+            buttonLayer = syncLayer;
+        }
+        pressed = button.get();
+        buttonActions[buttonLayer].accept(pressed, pressedLast);
+        pressedLast = pressed;
+    }
+
+    public int getButtonLayer() {
+        return buttonLayer;
+    }
+
+    public void setButtonLayer(int layer) {
+        isLayersSynced = false;
+        buttonLayer = layer % buttonActions.length;
+    }
+
+    public byte getButtonID() {
+        return buttonID;
+    }
+
+    @Override
+    public String toString() {
+        return ButtonHelper.buttonIDToString(buttonID);
+    }
+
+    public enum RunCondition {
+        WHEN_PRESSED,
+        WHEN_RELEASED,
+        WHILE_HELD,
+        TOGGLE_WHEN_PRESSED,
+        CANCEL_WHEN_PRESSED
+    }
+
     private static BiConsumer<Boolean, Boolean> defineButton(Command command, RunCondition runCondition) {
         BiConsumer<Boolean, Boolean> biConsumer;
+
+        if (command == null || runCondition == null) {
+            biConsumer = (aBoolean, bBoolean) -> {
+            };
+            return biConsumer;
+        }
+
         switch (runCondition) {
             case WHEN_PRESSED:
                 biConsumer = (pressed, pressedLast) -> {
@@ -82,57 +143,5 @@ public class MultiButton {
                 break;
         }
         return biConsumer;
-    }
-
-    public void addLayer(int layer, Command command, RunCondition runCondition) {
-        if (layerCount <= layer) {
-            layerCount = layer + 1;
-            buttonActions = Arrays.copyOf(buttonActions, layerCount);
-        }
-
-        buttonActions[layer] = defineButton(command, runCondition);
-
-        int i = 0;
-        for (Object o : buttonActions) {
-            if (o == null) {
-                buttonActions[i] = (aBoolean, aBoolean2) -> {
-                };
-            }
-            i++;
-        }
-    }
-
-    public void updateButton() {
-        if (isLayersSynced) {
-            buttonLayer = syncLayer;
-        }
-        pressed = button.get();
-        buttonActions[buttonLayer].accept(pressed, pressedLast);
-        pressedLast = pressed;
-    }
-
-    public int getButtonLayer() {
-        return buttonLayer;
-    }
-
-    public void setButtonLayer(int layer) {
-        buttonLayer = (layer - 1) % buttonActions.length;
-    }
-
-    public byte getButtonID() {
-        return buttonID;
-    }
-
-    @Override
-    public String toString() {
-        return ButtonHelper.buttonIDToString(buttonID);
-    }
-
-    public enum RunCondition {
-        WHEN_PRESSED,
-        WHEN_RELEASED,
-        WHILE_HELD,
-        TOGGLE_WHEN_PRESSED,
-        CANCEL_WHEN_PRESSED
     }
 }

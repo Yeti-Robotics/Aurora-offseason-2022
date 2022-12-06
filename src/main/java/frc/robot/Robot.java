@@ -5,9 +5,12 @@
 
 package frc.robot;
 
+import dagger.Lazy;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.rests.restUtils.RESTHandler;
 import frc.robot.di.DaggerRobotComponent;
 import frc.robot.di.RobotComponent;
 
@@ -24,7 +27,8 @@ public class Robot extends TimedRobot {
     @Inject
     RobotContainer robotContainer;
     private Command autonomousCommand;
-
+    @Inject
+    Lazy<RESTHandler> restHandler;
     public Robot() {
         RobotComponent robotComponent = DaggerRobotComponent.builder().build();
         robotComponent.inject(this);
@@ -111,18 +115,24 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
     }
 
-
     @Override
     public void testInit() {
-        // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+        LiveWindow.setEnabled(false);
+        restHandler.get().getCommand().schedule(false);
     }
 
 
     /**
      * This method is called periodically during test mode.
      */
+
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void testExit() {
+        restHandler.get().close();
     }
 }

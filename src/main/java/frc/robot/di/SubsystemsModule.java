@@ -19,7 +19,6 @@ import javax.inject.Singleton;
 public class SubsystemsModule {
     @Provides
     @Singleton
-    @Named("drivetrain")
     public DrivetrainSubsystem provideDrivetrainSubsystem(
         @Named("left drive motor 1") WPI_TalonFX leftMotor1,
         @Named("left drive motor 2") WPI_TalonFX leftMotor2,

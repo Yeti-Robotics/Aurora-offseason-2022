@@ -27,38 +27,6 @@ public class ButtonHelper {
         controller = controllers[0];
     }
 
-    public static String buttonIDToString(byte buttonID) {
-        String type;
-        int port = (buttonID & 0xFF);
-        byte binaryType = (byte) ((buttonID & 0xFF) >> 6);
-
-        switch (binaryType) {
-            case 0b00000000:
-                type = "Button";
-                port = buttonID;
-                break;
-            case 0b00000001:
-                type = "Axis";
-                port = port ^ 0b01000000;
-                if (port >= maxAxis) {
-                    port -= maxAxis;
-                }
-                break;
-            case 0b00000010:
-                type = "POV";
-                port = port ^ 0b10000000;
-                if (port >= maxPOV) {
-                    port %= maxPOV;
-                }
-                break;
-            default:
-                type = "UNKNOWN";
-                break;
-        }
-
-        return String.format("Button Type: %s || Port: %d\n", type, port);
-    }
-
     private void createButton(
         Button button,
         byte buttonID,
@@ -165,16 +133,20 @@ public class ButtonHelper {
         MultiButton.syncLayers(layer);
     }
 
-    public void setButtonLayer(ButtonType type, int port, int layer) {
-        buttonMap.get(controller).get(getButtonID(type, port)).setButtonLayer(layer);
+    public void setButtonLayer(int controllerNumber, ButtonType type, int port, int layer) {
+        buttonMap.get(controllers[controllerNumber]).get(getButtonID(type, port)).setButtonLayer(layer);
     }
 
-    public int getButtonLayer(ButtonType type, int port) {
-        return buttonMap.get(controller).get(getButtonID(type, port)).getButtonLayer();
+    public int getButtonLayer(int controllerNumber, ButtonType type, int port) {
+        return buttonMap.get(controllers[controllerNumber]).get(getButtonID(type, port)).getButtonLayer();
     }
 
     public HashMap<Byte, MultiButton> getButtonMap(int controllerNumber) {
         return buttonMap.get(controllers[controllerNumber]);
+    }
+
+    public MultiButton getButton(int controllerNumber, ButtonType type, int port) {
+        return buttonMap.get(controllers[controllerNumber]).get(getButtonID(type, port));
     }
 
     public byte getButtonID(ButtonType type, Integer port) {
@@ -191,6 +163,38 @@ public class ButtonHelper {
         }
 
         return (byte) 0b11111111;
+    }
+
+    public static String buttonIDToString(byte buttonID) {
+        String type;
+        int port = (buttonID & 0xFF);
+        byte binaryType = (byte) ((buttonID & 0xFF) >> 6);
+
+        switch (binaryType) {
+            case 0b00000000:
+                type = "Button";
+                port = buttonID;
+                break;
+            case 0b00000001:
+                type = "Axis";
+                port = port ^ 0b01000000;
+                if (port >= maxAxis) {
+                    port -= maxAxis;
+                }
+                break;
+            case 0b00000010:
+                type = "POV";
+                port = port ^ 0b10000000;
+                if (port >= maxPOV) {
+                    port %= maxPOV;
+                }
+                break;
+            default:
+                type = "UNKNOWN";
+                break;
+        }
+
+        return String.format("Button Type: %s || Port: %d\n", type, port);
     }
 
     public enum ButtonType {

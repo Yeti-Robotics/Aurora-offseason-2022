@@ -8,13 +8,18 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.DriveBackwardCommand;
+import frc.robot.commands.DriveForwardCommand;
 import frc.robot.di.RobotComponent;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.controllerUtils.ButtonHelper;
 import frc.robot.utils.controllerUtils.ControllerContainer;
+import frc.robot.utils.controllerUtils.MultiButton;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 
 /**
@@ -30,21 +35,23 @@ public class RobotContainer {
     private final ButtonHelper buttonHelper;
     public final DrivetrainSubsystem drivetrainSubsystem;
 
+    private final Map<Class<?>, CommandBase> commands;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     @Inject
     public RobotContainer(
         ControllerContainer controllerContainer,
-        DrivetrainSubsystem drivetrainSubsystem) {
+        DrivetrainSubsystem drivetrainSubsystem,
+        Map<Class<?>, CommandBase> commands) {
         this.controllerContainer = controllerContainer;
         this.drivetrainSubsystem = drivetrainSubsystem;
+        this.commands = commands;
 
         drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.CHEEZY);
 
         buttonHelper = new ButtonHelper(controllerContainer.getControllers());
-
-        // Configure the button bindings
         configureButtonBindings();
     }
 
@@ -55,7 +62,19 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    private void configureButtonBindings() {
+    public void configureButtonBindings() {
+        buttonHelper.createButton(1, 0, commands.get(DriveForwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
+        buttonHelper.createButton(1, 1, commands.get(DriveBackwardCommand.class), MultiButton.RunCondition.WHEN_PRESSED);
+        buttonHelper.createButton(2, 0,
+            new InstantCommand(() ->
+            {
+                MultiButton button = buttonHelper.getButton(0, ButtonHelper.ButtonType.BUTTON, 1);
+                if (button.getButtonLayer() == 0) {
+                    button.setButtonLayer(1);
+                } else {
+                    button.setButtonLayer(0);
+                }
+            }), MultiButton.RunCondition.WHEN_PRESSED);
     }
 
 

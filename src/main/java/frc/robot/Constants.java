@@ -48,11 +48,11 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * Math.PI; // 0.3192
 
         public static final double DISTANCE_PER_PULSE_HIGH_GEAR =
-            WHEEL_CIRCUMFERENCE_M / (TalonFXConstants.ENCODER_RESOLUTION * HIGH_GEAR_RATIO);
+            WHEEL_CIRCUMFERENCE_M / (TalonFXConstants.ENCODER_RESOLUTION * HIGH_GEAR_RATIO); // 0.0000246613
         public static final double DISTANCE_PER_PULSE_LOW_GEAR =
             WHEEL_CIRCUMFERENCE_M / (TalonFXConstants.ENCODER_RESOLUTION * HIGH_GEAR_RATIO);
 
-        public static final int[] SOLENOID_SHIFTER_PORTS = {0, 1};
+        public static final int[] SOLENOID_SHIFTER_PORTS = {1, 0};
 
         public static final double VOLTAGE_COMP = 12.0;
     }

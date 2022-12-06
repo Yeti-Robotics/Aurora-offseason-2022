@@ -19,7 +19,7 @@ import frc.robot.utils.controllerUtils.ControllerContainer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class DrivetrainSubsystem extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase implements AutoCloseable {
     private final WPI_TalonFX leftMotor1, leftMotor2, rightMotor1, rightMotor2;
     private final MotorControllerGroup leftMotors, rightMotors;
 
@@ -29,18 +29,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final DoubleSolenoid shifter;
 
-    public enum DriveMode {
-        TANK,
-        CHEEZY,
-        ARCADE
-    }
-
-    private DriveMode driveMode;
     private final ControllerContainer controllerContainer;
     private final Controller controller;
-    private NeutralMode neutralMode;
-
-    private final AHRS gyro;
+    private DriveMode driveMode;
 
     @Inject
     public DrivetrainSubsystem(
@@ -79,6 +70,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
         resetOdometry(new Pose2d());
 
         shiftUp();
+    }
+
+    private NeutralMode neutralMode;
+
+    private final AHRS gyro;
+
+    public void setDriveMode(DriveMode mode) {
+        driveMode = mode;
+        switch (driveMode) {
+            case TANK:
+                this.setDefaultCommand(
+                    new RunCommand(() -> tankDrive(controller.getLeftY(), controller.getRightY()), this));
+                break;
+            case CHEEZY:
+                this.setDefaultCommand(
+                    new RunCommand(() -> cheezyDrive(controller.getLeftY(), controller.getRightX()), this));
+                break;
+            case ARCADE:
+                this.setDefaultCommand(
+                    new RunCommand(() -> arcadeDrive(controller.getLeftY(), controller.getRightX()), this));
+                break;
+        }
     }
 
     @Override
@@ -211,22 +224,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return shifter.get();
     }
 
-    public void setDriveMode(DriveMode mode) {
-        driveMode = mode;
-        switch (driveMode) {
-            case TANK:
-                this.setDefaultCommand(
-                    new RunCommand(() -> tankDrive(controller.getLeftY(), controller.getRightY()), this));
-                break;
-            case CHEEZY:
-                this.setDefaultCommand(
-                    new RunCommand(() -> cheezyDrive(controller.getLeftY(), controller.getRightX()), this));
-                break;
-            case ARCADE:
-                this.setDefaultCommand(
-                    new RunCommand(() -> arcadeDrive(controller.getLeftY(), controller.getRightX()), this));
-                break;
-        }
+    public enum DriveMode {
+        TANK,
+        CHEEZY,
+        ARCADE
     }
 
     public DriveMode getDriveMode() {
@@ -235,6 +236,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public NeutralMode getNeutralMode() {
         return neutralMode;
+    }
+
+    public void close() {
+        shifter.close();
     }
 }
 
