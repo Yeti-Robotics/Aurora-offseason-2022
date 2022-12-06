@@ -52,6 +52,7 @@ public class RobotContainer {
         drivetrainSubsystem.setDriveMode(DrivetrainSubsystem.DriveMode.CHEEZY);
 
         buttonHelper = new ButtonHelper(controllerContainer.getControllers());
+        configureButtonBindings();
     }
 
 
