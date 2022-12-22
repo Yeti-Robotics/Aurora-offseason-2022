@@ -54,7 +54,7 @@ public class MultiButton {
 
     public void updateButton() {
         if (isLayersSynced) {
-            buttonLayer = syncLayer;
+            setAllLayers();
         }
         pressed = button.get();
         buttonActions[buttonLayer].accept(pressed, pressedLast);
@@ -67,7 +67,11 @@ public class MultiButton {
 
     public void setButtonLayer(int layer) {
         isLayersSynced = false;
-        buttonLayer = layer % buttonActions.length;
+        buttonLayer = layer % layerCount;
+    }
+
+    public void setAllLayers() {
+        buttonLayer = syncLayer % layerCount;
     }
 
     public byte getButtonID() {
