@@ -235,6 +235,14 @@ public class RESTHandler implements Sendable, AutoCloseable {
         return timer.hasElapsed(seconds);
     }
 
+    public static double time() {
+        return timer.get();
+    }
+
+    public static void resetTimer() {
+        timer.reset();
+    }
+
     public static void setInit(Runnable runnable) {
         init = runnable;
     }
