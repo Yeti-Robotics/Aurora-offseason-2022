@@ -21,28 +21,24 @@ import java.util.List;
 import java.util.Objects;
 
 public class RESTHandler implements Sendable, AutoCloseable {
-    private final List<Object> rests;
-    private final HashMap<Object, List<Method>> restTests;
-
-    private Object currentREST;
-    private List<Method> currentTestList;
-    private Method currentTest;
-    private List<Subsystem> currentRequirements;
     private static Runnable init = () -> {
     };
     private static Runnable execute = () -> {
     };
     private static Runnable end = () -> {
     };
-
+    private static Timer timer;
+    private static boolean testFinished = true;
+    private final List<Object> rests;
+    private final HashMap<Object, List<Method>> restTests;
     private final String[][] results;
-
+    private Object currentREST;
+    private List<Method> currentTestList;
+    private Method currentTest;
+    private List<Subsystem> currentRequirements;
     private DataLog log;
     private StringLogEntry resultLog;
-    private static Timer timer;
-
     private boolean newREST = true;
-    private static boolean testFinished = true;
     private boolean newTest = true;
     private int restIndex = 0;
     private int testIndex = 0;
@@ -56,20 +52,21 @@ public class RESTHandler implements Sendable, AutoCloseable {
         int i = 0;
         for (Object rest : rests) {
             if (Objects.isNull(rest)) {
-                throw new NullPointerException("SubsystemTest for SubsystemTestHandler is null");
+                throw new NullPointerException("REST for RESTHandler is null");
             }
 
             Class<?> restClass = rest.getClass();
             if (!restClass.isAnnotationPresent(RobotEnabledSelfTest.class)) {
-                throw new AnnotationTypeMismatchException(null, "This class is not annotated as a SubsystemTest");
+                throw new AnnotationTypeMismatchException(null, "This class is not annotated as a REST");
             }
 
             restTests.put(rest, new ArrayList<>());
+            List<Method> methodList = restTests.get(rest);
 
             for (Method method : restClass.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(Test.class)) {
                     method.setAccessible(true);
-                    restTests.get(rest).add(method);
+                    methodList.add(method);
                 }
             }
             results[i] = new String[restTests.get(rest).size()];
@@ -81,6 +78,26 @@ public class RESTHandler implements Sendable, AutoCloseable {
         currentTest = currentTestList.get(testIndex);
         currentRequirements = new ArrayList<>();
         timer = new Timer();
+    }
+
+    public static boolean hasElapsed(double seconds) {
+        return timer.hasElapsed(seconds);
+    }
+
+    public static void setInit(Runnable runnable) {
+        init = runnable;
+    }
+
+    public static void setExecute(Runnable runnable) {
+        execute = runnable;
+    }
+
+    public static void setEnd(Runnable runnable) {
+        end = runnable;
+    }
+
+    public static void setFinished(boolean finish) {
+        testFinished = finish;
     }
 
     public void initialize() {
@@ -182,14 +199,16 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
         Subsystem subsystem;
         for (Field field : currentREST.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(Requirement.class)) {
-                field.setAccessible(true);
-                try {
-                    subsystem = (Subsystem) field.get(currentREST);
-                    currentRequirements.add(subsystem);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+            if (!field.isAnnotationPresent(Requirement.class)) {
+                continue;
+            }
+
+            field.setAccessible(true);
+            try {
+                subsystem = (Subsystem) field.get(currentREST);
+                currentRequirements.add(subsystem);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         }
         newREST = false;
@@ -199,12 +218,10 @@ public class RESTHandler implements Sendable, AutoCloseable {
         return currentRequirements;
     }
 
-
     public void loadTest() {
         invokeMethod(currentTest, currentREST);
         newTest = false;
     }
-
 
     public boolean isNewTest() {
         return newTest;
@@ -222,33 +239,12 @@ public class RESTHandler implements Sendable, AutoCloseable {
         return false;
     }
 
-
     private void invokeMethod(Method method, Object object) {
         try {
             method.invoke(object);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean hasElapsed(double seconds) {
-        return timer.hasElapsed(seconds);
-    }
-
-    public static void setInit(Runnable runnable) {
-        init = runnable;
-    }
-
-    public static void setExecute(Runnable runnable) {
-        execute = runnable;
-    }
-
-    public static void setEnd(Runnable runnable) {
-        end = runnable;
-    }
-
-    public static void setFinished(boolean finish) {
-        testFinished = finish;
     }
 
     public RESTCommand getCommand() {
