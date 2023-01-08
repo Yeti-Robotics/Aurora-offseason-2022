@@ -6,11 +6,14 @@ import frc.robot.commands.rests.restAnnotations.*;
 import frc.robot.commands.rests.restUtils.RESTHandler;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
+import javax.inject.Inject;
+
 @RobotEnabledSelfTest
 public class DrivetrainREST {
     @Requirement
     private final DrivetrainSubsystem drivetrainSubsystem;
 
+    @Inject
     public DrivetrainREST(DrivetrainSubsystem drivetrainSubsystem) {
         this.drivetrainSubsystem = drivetrainSubsystem;
     }
