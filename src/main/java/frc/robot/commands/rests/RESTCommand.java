@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 
 public class RESTCommand extends CommandBase {
-    private final RESTHandler handler;
+    private RESTHandler handler;
 
     @Inject
     public RESTCommand(RESTHandler handler) {
@@ -54,6 +54,6 @@ public class RESTCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        // handler.shutdownREST();
+        handler = null;
     }
 }

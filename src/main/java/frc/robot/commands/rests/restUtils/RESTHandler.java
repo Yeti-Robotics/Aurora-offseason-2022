@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class RESTHandler implements Sendable, AutoCloseable {
+    private RESTCommand restCommand;
     private static Runnable init = () -> {
     };
     private static Runnable execute = () -> {
@@ -144,7 +145,6 @@ public class RESTHandler implements Sendable, AutoCloseable {
         end = () -> {
         };
 
-        testFinished = true;
         newTest = true;
         timer.reset();
     }
@@ -220,6 +220,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
     public void loadTest() {
         invokeMethod(currentTest, currentREST);
+        testFinished = true;
         newTest = false;
     }
 
@@ -232,7 +233,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
     }
 
     public boolean isRESTFinished() {
-        if (restIndex == rests.size() - 1 && testFinished && testIndex == currentTestList.size() - 1) {
+        if (restIndex == rests.size() - 1  && testFinished && testIndex == currentTestList.size() - 1) {
             shutdownREST();
             return true;
         }
@@ -248,7 +249,10 @@ public class RESTHandler implements Sendable, AutoCloseable {
     }
 
     public RESTCommand getCommand() {
-        return new RESTCommand(this);
+        if (restCommand == null) {
+            restCommand = new RESTCommand(this);
+        }
+        return restCommand;
     }
 
     @Override
@@ -261,6 +265,10 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
     @Override
     public void close() {
+        if (restCommand.isScheduled()) {
+            restCommand.cancel();
+        }
+        restCommand = null;
         SendableRegistry.remove(this);
         log.close();
     }

@@ -1,7 +1,5 @@
 package frc.robot.commands.rests;
 
-import static frc.robot.commands.rests.restUtils.RESTAssertions.*;
-
 import frc.robot.commands.rests.restAnnotations.*;
 import frc.robot.commands.rests.restUtils.REST;
 import frc.robot.commands.rests.restUtils.RESTHandler;
@@ -9,13 +7,15 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 import javax.inject.Inject;
 
+import static frc.robot.commands.rests.restUtils.RESTAssertions.assertTrue;
+
 @RobotEnabledSelfTest
-public class DrivetrainREST {
+public class DrivetrainTwoREST {
     @Requirement
     private final DrivetrainSubsystem drivetrainSubsystem;
 
     @Inject
-    public DrivetrainREST(DrivetrainSubsystem drivetrainSubsystem) {
+    public DrivetrainTwoREST(DrivetrainSubsystem drivetrainSubsystem) {
         this.drivetrainSubsystem = drivetrainSubsystem;
     }
 
@@ -28,7 +28,7 @@ public class DrivetrainREST {
     }
 
     @Test
-    public void driveForward() {
+    public void driveForwardTwo() {
         RESTHandler.setInit(() -> {
             drivetrainSubsystem.resetEncoders();
         });
