@@ -6,7 +6,6 @@ import dagger.multibindings.IntoSet;
 import frc.robot.commands.rests.DrivetrainREST;
 import frc.robot.commands.rests.DrivetrainTwoREST;
 import frc.robot.commands.rests.restAnnotations.RobotEnabledSelfTest;
-import frc.robot.commands.rests.restUtils.REST;
 import frc.robot.commands.rests.restUtils.RESTHandler;
 import frc.robot.subsystems.DrivetrainSubsystem;
 

@@ -1,7 +1,6 @@
 package frc.robot.commands.rests;
 
 import frc.robot.commands.rests.restAnnotations.*;
-import frc.robot.commands.rests.restUtils.REST;
 import frc.robot.commands.rests.restUtils.RESTHandler;
 import frc.robot.subsystems.DrivetrainSubsystem;
 

@@ -3,7 +3,6 @@ package frc.robot.commands.rests;
 import static frc.robot.commands.rests.restUtils.RESTAssertions.*;
 
 import frc.robot.commands.rests.restAnnotations.*;
-import frc.robot.commands.rests.restUtils.REST;
 import frc.robot.commands.rests.restUtils.RESTHandler;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
