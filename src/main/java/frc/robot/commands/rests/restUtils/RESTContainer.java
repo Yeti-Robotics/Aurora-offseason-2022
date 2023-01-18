@@ -1,11 +1,16 @@
 package frc.robot.commands.rests.restUtils;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.rests.restAnnotations.RobotEnabledSelfTest;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -13,17 +18,19 @@ import java.util.function.BooleanSupplier;
  */
 @RobotEnabledSelfTest
 public abstract class RESTContainer {
-    private static class Test {
+     public static class RobotEnableSelfTest extends CommandBase {
         private final Runnable initFn;
         private final Runnable executeFn;
         private final BooleanSupplier isFinishedFn;
         private final Runnable endFn;
 
-        public Test(Runnable init, Runnable execute, BooleanSupplier isFinished, Runnable end) {
+        public RobotEnableSelfTest(Runnable init, Runnable execute, BooleanSupplier isFinished, Runnable end) {
             this.initFn = init;
             this.executeFn = execute;
             this.isFinishedFn = isFinished;
             this.endFn = end;
+
+            addRequirements();
         }
 
         private void init() {
@@ -39,7 +46,7 @@ public abstract class RESTContainer {
             return true;
         }
 
-        private void end() {
+        private void end() throws RESTAssertionException{
             if(this.endFn != null) this.endFn.run();
         }
 
@@ -55,7 +62,8 @@ public abstract class RESTContainer {
             end();
         }
     }
-    private ArrayList<Test> tests;
+    private ArrayList<Subsystem> requirements;
+    private ArrayList<RobotEnableSelfTest> tests;
 
     // Vars for currently being processed (in getTests function) test's resources
     private Runnable currentInit;
@@ -109,13 +117,41 @@ public abstract class RESTContainer {
         return RESTTimer.hasElapsed(seconds);
     }
 
-    // final means cannot be overridden here
-    public final ArrayList<Test> getTests() {
-        if (this.tests != null) {
-            return this.tests;
+    public final ArrayList<Subsystem> getRequirements() {
+        if (requirements != null) {
+            return requirements;
         }
 
-        ArrayList<Test> tests = new ArrayList<>();
+        requirements = new ArrayList<>();
+
+        Class<?> extendingClass = this.getClass();
+
+        for (Field field : extendingClass.getDeclaredFields()) {
+            if (field.isAnnotationPresent(frc.robot.commands.rests.restAnnotations.Requirement.class)) {
+                if (field.getType() != Subsystem.class) {
+                    throw new RuntimeException("Fields typed @Requirement must be typed Subsystem.");
+                }
+
+                field.setAccessible(true);
+
+                try {
+                    requirements.add((Subsystem) field.get(this));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        return requirements;
+    }
+
+    // final means cannot be overridden here
+    public final ArrayList<RobotEnableSelfTest> getTests() {
+        if (tests != null) {
+            return tests;
+        }
+
+        tests = new ArrayList<>();
 
         // ref to the class extending RESTContainer
         Class<?> extendingClass = this.getClass();
@@ -138,7 +174,7 @@ public abstract class RESTContainer {
                 }
 
                 // add test obj to array and reset the current... variables
-                tests.add(new Test(this.currentInit, this.currentExecute, this.currentIsFinished, this.currentEnd));
+                tests.add(new RobotEnableSelfTest(this.currentInit, this.currentExecute, this.currentIsFinished, this.currentEnd));
                 this.currentInit = null;
                 this.currentExecute = null;
                 this.currentIsFinished = null;
