@@ -6,167 +6,73 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.commands.rests.RESTCommand;
 import frc.robot.commands.rests.restAnnotations.*;
 
 import javax.inject.Inject;
-import java.lang.annotation.AnnotationTypeMismatchException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 public class RESTHandler implements Sendable, AutoCloseable {
     private RESTCommand restCommand;
-    private static Runnable init = () -> {
-    };
-    private static Runnable execute = () -> {
-    };
-    private static Runnable end = () -> {
-    };
-    private static Timer timer;
     private static boolean testFinished = true;
-    private final List<Object> rests;
-    private final HashMap<Object, List<Method>> restTests;
-    private final String[][] results;
+    private final List<RESTContainer> rests;
+    private final HashMap<Class<? extends RESTContainer>, ArrayList<String>> results;
     private Object currentREST;
     private List<Method> currentTestList;
     private Method currentTest;
     private List<Subsystem> currentRequirements;
     private DataLog log;
     private StringLogEntry resultLog;
-    private boolean newREST = true;
-    private boolean newTest = true;
-    private int restIndex = 0;
-    private int testIndex = 0;
 
+    private RESTContainer scheduledREST;
+    private RESTContainer.RobotEnableSelfTest scheduledTest;
     @Inject
-    public RESTHandler(List<Object> rests) {
+    public RESTHandler(List<RESTContainer> rests) {
         this.rests = rests;
-        restTests = new HashMap<>();
         results = new String[rests.size()][];
 
-        int i = 0;
-        for (Object rest : rests) {
-            if (Objects.isNull(rest)) {
-                throw new NullPointerException("REST for RESTHandler is null");
-            }
-
-            Class<?> restClass = rest.getClass();
-            if (!restClass.isAnnotationPresent(RobotEnabledSelfTest.class)) {
-                throw new AnnotationTypeMismatchException(null, "This class is not annotated as a REST");
-            }
-
-            restTests.put(rest, new ArrayList<>());
-            List<Method> methodList = restTests.get(rest);
-
-            for (Method method : restClass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(Test.class)) {
-                    method.setAccessible(true);
-                    methodList.add(method);
-                }
-            }
-            results[i] = new String[restTests.get(rest).size()];
-            i++;
-        }
-
-        currentREST = rests.get(restIndex);
-        currentTestList = restTests.get(currentREST);
-        currentTest = currentTestList.get(testIndex);
         currentRequirements = new ArrayList<>();
-        timer = new Timer();
     }
 
-    public static boolean hasElapsed(double seconds) {
-        return timer.hasElapsed(seconds);
-    }
-
-    public static void setInit(Runnable runnable) {
-        init = runnable;
-    }
-
-    public static void setExecute(Runnable runnable) {
-        execute = runnable;
-    }
-
-    public static void setEnd(Runnable runnable) {
-        end = runnable;
-    }
-
-    public static void setFinished(boolean finish) {
-        testFinished = finish;
-    }
-
-    public void initialize() {
+    public void init() {
         DataLogManager.start();
         log = DataLogManager.getLog();
 
-        setupREST();
+        for (RESTContainer c : rests) {
+            c.getTests();
+        }
 
         SendableRegistry.addLW(this, "RESTHandler");
-        timer.start();
     }
 
-    public void initTest() {
-        init.run();
+    public void fullTest() {
     }
 
-    public void runTest() {
-        execute.run();
+    public void runTest(RESTContainer.RobotEnableSelfTest test) {
+        new RESTCommand(test.initFn, test.executeFn, test.isFinishedFn, test.endFn).schedule();
     }
 
-    public void handleResults() {
+    public void results() {
         String result;
         try {
-            end.run();
             result = String.format("%s :: PASSED\n", currentTest.getName().toUpperCase());
-            results[restIndex][testIndex] = result.stripTrailing();
+            results.get(scheduledREST.getClass()).add(result.stripTrailing());
             resultLog.append(result);
         } catch (Exception e) {
             result = String.format("%s :: FAILED\n", currentTest.getName().toUpperCase());
-            results[restIndex][testIndex] = result.stripTrailing();
+            results.get(scheduledREST.getClass()).add(result.stripTrailing());
             resultLog.append(result + "\t\t" + e.getLocalizedMessage());
         }
     }
 
-    public String[] getRESTResults(int restIndex) {
-        return results[restIndex];
-    }
-
-    public void reset() {
-        init = () -> {
-        };
-        execute = () -> {
-        };
-        end = () -> {
-        };
-
-        newTest = true;
-        timer.reset();
-    }
-
-    public void updateRESTProgress() {
-        if (testIndex < currentTestList.size() - 1) {
-            testIndex++;
-            currentTest = currentTestList.get(testIndex);
-            newREST = false;
-            return;
-        }
-
-        if (restIndex < rests.size() - 1) {
-            shutdownREST();
-            restIndex++;
-            testIndex = 0;
-            currentREST = rests.get(restIndex);
-            currentTestList = restTests.get(currentREST);
-            currentTest = currentTestList.get(testIndex);
-            setupREST();
-            newREST = true;
-        }
+    public ArrayList<String> getRESTResults(Class<? extends RESTContainer> containerClass) {
+        return results.get(containerClass);
     }
 
     private void setupREST() {
@@ -188,10 +94,6 @@ public class RESTHandler implements Sendable, AutoCloseable {
                 return;
             }
         }
-    }
-
-    public boolean isNewREST() {
-        return newREST;
     }
 
     public void updateRequirements() {
@@ -218,28 +120,6 @@ public class RESTHandler implements Sendable, AutoCloseable {
         return currentRequirements;
     }
 
-    public void loadTest() {
-        invokeMethod(currentTest, currentREST);
-        testFinished = true;
-        newTest = false;
-    }
-
-    public boolean isNewTest() {
-        return newTest;
-    }
-
-    public boolean isTestFinished() {
-        return testFinished;
-    }
-
-    public boolean isRESTFinished() {
-        if (restIndex == rests.size() - 1  && testFinished && testIndex == currentTestList.size() - 1) {
-            shutdownREST();
-            return true;
-        }
-        return false;
-    }
-
     private void invokeMethod(Method method, Object object) {
         try {
             method.invoke(object);
@@ -248,18 +128,11 @@ public class RESTHandler implements Sendable, AutoCloseable {
         }
     }
 
-    public RESTCommand getCommand() {
-        if (restCommand == null) {
-            restCommand = new RESTCommand(this);
-        }
-        return restCommand;
-    }
-
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("RESTHandler");
-        for (Object rest : rests) {
-            builder.addStringArrayProperty(rest.getClass().getSimpleName(), () -> getRESTResults(restIndex), null);
+        for (RESTContainer rest : rests) {
+            builder.addStringArrayProperty(rest.getClass().getSimpleName(), () -> getRESTResults(rest.getClass()).toArray(new String[5]), null);
         }
     }
 
@@ -268,9 +141,44 @@ public class RESTHandler implements Sendable, AutoCloseable {
         if (restCommand.isScheduled()) {
             restCommand.cancel();
         }
+
         restCommand = null;
         SendableRegistry.remove(this);
         log.close();
+    }
+
+    private static class RESTCommand extends CommandBase {
+        private Runnable initFn;
+        private Runnable executeFn;
+        private BooleanSupplier isFinishedFn;
+        private Runnable endFn;
+
+        public RESTCommand(Runnable initFn, Runnable executeFn, BooleanSupplier isFinishedFn, Runnable endFn) {
+            this.initFn = initFn;
+            this.executeFn = executeFn;
+            this.isFinishedFn = isFinishedFn;
+            this.endFn = endFn;
+        }
+
+        @Override
+        public void initialize() {
+            if (initFn != null) initFn.run();
+        }
+
+        @Override
+        public void execute() {
+            if (executeFn != null) executeFn.run();
+        }
+
+        @Override
+        public boolean isFinished() {
+            if (isFinishedFn != null) return isFinishedFn.getAsBoolean();
+            return true;
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+        }
     }
 }
 
