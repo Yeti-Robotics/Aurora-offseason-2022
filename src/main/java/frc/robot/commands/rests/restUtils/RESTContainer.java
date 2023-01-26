@@ -15,21 +15,45 @@ import java.util.function.BooleanSupplier;
  */
 @RobotEnabledSelfTest
 public abstract class RESTContainer {
-     public static class RobotEnableSelfTest {
+    public static class RobotEnableSelfTest {
+        private final String name;
 
-        public final Runnable initFn;
-        public final Runnable executeFn;
-        public final BooleanSupplier isFinishedFn;
-        public final Runnable endFn;
+        private final Runnable initFn;
+        private final Runnable executeFn;
+        private final BooleanSupplier isFinishedFn;
+        private final Runnable endFn;
 
-        public RobotEnableSelfTest(Runnable init, Runnable execute, BooleanSupplier isFinished, Runnable end) {
+        public RobotEnableSelfTest(String name, Runnable init, Runnable execute, BooleanSupplier isFinished, Runnable end) {
+            this.name = name;
             this.initFn = init;
             this.executeFn = execute;
             this.isFinishedFn = isFinished;
             this.endFn = end;
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public void init() {
+            if (initFn != null) initFn.run();
+        }
+
+        public void execute() {
+            if (executeFn != null) executeFn.run();
+        }
+
+        public boolean isFinished() {
+            if (isFinishedFn != null) return isFinishedFn.getAsBoolean();
+            return true;
+        }
+
+        public void end() throws RESTAssertionException {
+            if (endFn != null) endFn.run();
+        }
     }
-    private ArrayList<Subsystem> requirements;
+
+    private Subsystem[] requirements;
     private ArrayList<RobotEnableSelfTest> tests;
     // Vars for currently being processed (in getTests function) test's resources
     private Runnable currentInit;
@@ -91,12 +115,12 @@ public abstract class RESTContainer {
         return RESTTimer.hasElapsed(seconds);
     }
 
-    public final ArrayList<Subsystem> getRequirements() {
+    public final Subsystem[] getRequirements() {
         if (requirements != null) {
             return requirements;
         }
 
-        requirements = new ArrayList<>();
+        ArrayList<Subsystem> tempRequirements = new ArrayList<>();
 
         Class<?> extendingClass = this.getClass();
 
@@ -109,13 +133,14 @@ public abstract class RESTContainer {
                 field.setAccessible(true);
 
                 try {
-                    requirements.add((Subsystem) field.get(this));
+                    tempRequirements.add((Subsystem) field.get(this));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
+        requirements = tempRequirements.toArray(new Subsystem[0]);
         return requirements;
     }
 
@@ -148,7 +173,7 @@ public abstract class RESTContainer {
                 }
 
                 // add test obj to array and reset the current... variables
-                tests.add(new RobotEnableSelfTest(this.currentInit, this.currentExecute, this.currentIsFinished, this.currentEnd));
+                tests.add(new RobotEnableSelfTest(method.getName().toUpperCase(), this.currentInit, this.currentExecute, this.currentIsFinished, this.currentEnd));
                 this.currentInit = null;
                 this.currentExecute = null;
                 this.currentIsFinished = null;
