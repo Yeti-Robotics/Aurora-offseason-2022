@@ -32,7 +32,7 @@ public class DrivetrainTwoREST extends RESTContainer {
         });
 
         execute(() -> {
-            drivetrainSubsystem.tankDrive(0.5, 0.5);
+            drivetrainSubsystem.tankDrive(1.0, 1.0);
         });
 
         isFinished(() -> hasElapsed(5.0));

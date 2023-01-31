@@ -53,7 +53,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
     public void scheduleRESTContainers(ArrayList<RESTContainer> rests) {
         reset();
-        containerSchedule = rests;
+        containerSchedule = new ArrayList<>(rests);
         restSchedule = new ArrayList<>();
 
         advanceSchedule();
@@ -74,7 +74,6 @@ public class RESTHandler implements Sendable, AutoCloseable {
         } catch (Exception e) {
             result = String.format("%s :: FAILED\n", currentREST.getName());
             results.get(currentContainer.getClass()).add(result.stripTrailing());
-            ;
             resultLog.append(result + "\t\t" + e.getLocalizedMessage());
         }
 
@@ -97,7 +96,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
         currentContainer = containerSchedule.remove(containerSchedule.size() - 1);
         currentRequirements = currentContainer.getRequirements();
-        restSchedule = currentContainer.getTests();
+        restSchedule = new ArrayList<>(currentContainer.getTests());
 
         resultLog = new StringLogEntry(log, "RESTResult/" + currentContainer.getClass().getSimpleName());
 
@@ -124,7 +123,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("RESTHandler");
         for (RESTContainer container : restContainers) {
-            builder.addStringArrayProperty(container.getClass().getSimpleName(), () -> getRESTResults(container.getClass()).toArray(new String[container.getTests().size() - 1]), null);
+            builder.addStringArrayProperty(container.getClass().getSimpleName(), () -> getRESTResults(container.getClass()).toArray(new String[container.getTests().size()]), null);
         }
     }
 
