@@ -119,7 +119,8 @@ public class Robot extends TimedRobot {
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
         LiveWindow.setEnabled(false);
-        restHandler.get().getCommand().schedule(false);
+        restHandler.get().init();
+        restHandler.get().fullTest();
     }
 
 

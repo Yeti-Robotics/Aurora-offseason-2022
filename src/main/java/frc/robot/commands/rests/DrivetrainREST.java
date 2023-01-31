@@ -1,15 +1,15 @@
 package frc.robot.commands.rests;
 
-import static frc.robot.commands.rests.restUtils.RESTAssertions.*;
-
-import frc.robot.commands.rests.restAnnotations.*;
-import frc.robot.commands.rests.restUtils.RESTHandler;
+import frc.robot.commands.rests.restAnnotations.Requirement;
+import frc.robot.commands.rests.restAnnotations.Test;
+import frc.robot.commands.rests.restUtils.RESTContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import javax.inject.Inject;
 
-@RobotEnabledSelfTest
-public class DrivetrainREST {
+import static frc.robot.commands.rests.restUtils.RESTAssertions.assertEquals;
+
+public class DrivetrainREST extends RESTContainer {
     @Requirement
     private final DrivetrainSubsystem drivetrainSubsystem;
 
@@ -18,28 +18,27 @@ public class DrivetrainREST {
         this.drivetrainSubsystem = drivetrainSubsystem;
     }
 
-    @Before
-    public void setup() {
+    public void before() {
     }
 
-    @After
-    public void shutdown() {
+    @Override
+    protected void after() {
     }
 
     @Test
-    public void driveForward() {
-        RESTHandler.setInit(() -> {
+    void driveForwards() {
+        init(() -> {
             drivetrainSubsystem.resetEncoders();
         });
 
-        RESTHandler.setExecute(() -> {
+        execute(() -> {
             drivetrainSubsystem.tankDrive(0.5, 0.5);
-            RESTHandler.setFinished(RESTHandler.hasElapsed(5.0));
         });
 
-        RESTHandler.setEnd(() -> {
-            drivetrainSubsystem.stopDrive();
-            assertTrue(drivetrainSubsystem.getLeftEncoderDistance() > 0);
+        isFinished(() -> hasElapsed(5.0));
+
+        end(() -> {
+            assertEquals(5000, drivetrainSubsystem.getLeftEncoderDistance(), 50);
         });
     }
 }

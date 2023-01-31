@@ -12,22 +12,28 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class RESTHandler implements Sendable, AutoCloseable {
-    private final List<RESTContainer> restContainers;
+    private final ArrayList<RESTContainer> restContainers;
     private final HashMap<Class<? extends RESTContainer>, ArrayList<String>> results;
     private DataLog log;
     private StringLogEntry resultLog;
 
-    private List<RESTContainer> containerSchedule;
-    private List<RESTContainer.RobotEnableSelfTest> restSchedule;
+    private ArrayList<RESTContainer> containerSchedule = new ArrayList<>();
+    private ArrayList<RESTContainer.RobotEnableSelfTest> restSchedule = new ArrayList<>();
     private RESTContainer currentContainer;
     private RESTContainer.RobotEnableSelfTest currentREST;
+    private Subsystem[] currentRequirements;
+    private RESTCommand scheduledCommand;
+
     @Inject
-    public RESTHandler(List<RESTContainer> rests) {
+    public RESTHandler(ArrayList<RESTContainer> rests) {
         this.restContainers = rests;
         results = new HashMap<>(rests.size());
+
+        for (RESTContainer container : rests) {
+            results.put(container.getClass(), new ArrayList<>());
+        }
     }
 
     public void init() {
@@ -45,33 +51,20 @@ public class RESTHandler implements Sendable, AutoCloseable {
         scheduleRESTContainers(restContainers);
     }
 
-    public void scheduleRESTContainers(List<RESTContainer> rests) {
+    public void scheduleRESTContainers(ArrayList<RESTContainer> rests) {
+        reset();
         containerSchedule = rests;
+        restSchedule = new ArrayList<>();
 
-        loadRESTContainer();
+        advanceSchedule();
     }
 
-    private void loadRESTContainer() {
-        if (currentContainer != null) {
-            currentContainer.after();
-        }
-
-        if (containerSchedule.isEmpty()) {
-            return;
-        }
-        currentContainer = containerSchedule.remove(0);
-        currentREST = currentContainer.
-
-        currentRESTContainer.before();
-
-        runTest();
+    private void runTest(RESTContainer.RobotEnableSelfTest test) {
+        scheduledCommand = new RESTCommand(this, test, currentRequirements);
+        scheduledCommand.schedule();
     }
 
-    public void runTest(RESTContainer.RobotEnableSelfTest test) {
-        new RESTCommand(this, test).schedule();
-    }
-
-    private void results() {
+    private void finishREST() {
         String result;
         try {
             currentREST.end();
@@ -81,10 +74,46 @@ public class RESTHandler implements Sendable, AutoCloseable {
         } catch (Exception e) {
             result = String.format("%s :: FAILED\n", currentREST.getName());
             results.get(currentContainer.getClass()).add(result.stripTrailing());
+            ;
             resultLog.append(result + "\t\t" + e.getLocalizedMessage());
         }
 
+        advanceSchedule();
+    }
 
+    private void advanceSchedule() {
+        if (!restSchedule.isEmpty()) {
+            currentREST = restSchedule.remove(restSchedule.size() - 1);
+            runTest(currentREST);
+            return;
+        }
+
+        if (containerSchedule.isEmpty()) {
+            return;
+        }
+        if (currentContainer != null) {
+            currentContainer.after();
+        }
+
+        currentContainer = containerSchedule.remove(containerSchedule.size() - 1);
+        currentRequirements = currentContainer.getRequirements();
+        restSchedule = currentContainer.getTests();
+
+        resultLog = new StringLogEntry(log, "RESTResult/" + currentContainer.getClass().getSimpleName());
+
+        currentContainer.before();
+        currentREST = restSchedule.remove(restSchedule.size() - 1);
+
+        runTest(currentREST);
+    }
+
+    private void reset() {
+        currentContainer = null;
+        currentREST = null;
+        if (scheduledCommand != null) {
+            scheduledCommand.cancel();
+            scheduledCommand = null;
+        }
     }
 
     public ArrayList<String> getRESTResults(Class<? extends RESTContainer> containerClass) {
@@ -132,7 +161,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
         @Override
         public void end(boolean interrupted) {
-            handler.results();
+            handler.finishREST();
         }
     }
 }

@@ -1,8 +1,6 @@
 package frc.robot.commands.rests.restUtils;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.commands.rests.restAnnotations.RobotEnabledSelfTest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +11,6 @@ import java.util.function.BooleanSupplier;
 /**
  * Contains REST tests (methods annotated with @Test)
  */
-@RobotEnabledSelfTest
 public abstract class RESTContainer {
     public static class RobotEnableSelfTest {
         private final String name;
@@ -126,10 +123,6 @@ public abstract class RESTContainer {
 
         for (Field field : extendingClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(frc.robot.commands.rests.restAnnotations.Requirement.class)) {
-                if (field.getType() != Subsystem.class) {
-                    throw new RuntimeException("Fields typed @Requirement must be typed Subsystem.");
-                }
-
                 field.setAccessible(true);
 
                 try {
