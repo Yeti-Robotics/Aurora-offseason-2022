@@ -73,399 +73,407 @@ public class RESTAssertions {
         assertNotNull(actual, null);
     }
 
-    private static void assertEquals(int expected, int actual, int delta, String message) {
+    public static void assertEquals(int expected, int actual, int delta, String message) {
         if (!(expected >= actual - delta && expected <= actual + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(int expected, Integer actual, int delta, String message) {
+    public static void assertEquals(int expected, Integer actual, int delta, String message) {
         if (!(expected >= actual.intValue() - delta && expected <= actual.intValue() + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Integer expected, int actual, int delta, String message) {
+    public static void assertEquals(Integer expected, int actual, int delta, String message) {
         if (!(expected.intValue() >= actual - delta && expected.intValue() <= actual + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Integer expected, Integer actual, int delta, String message) {
+    public static void assertEquals(Integer expected, Integer actual, int delta, String message) {
         if (!(expected.intValue() >= actual.intValue() - delta && expected.intValue() <= actual.intValue() + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(int expected, int actual, int delta) {
+    public static void assertEquals(int expected, int actual, int delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(int expected, Integer actual, int delta) {
+    public static void assertEquals(int expected, Integer actual, int delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(Integer expected, int actual, int delta) {
+    public static void assertEquals(Integer expected, int actual, int delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(Integer expected, Integer actual, int delta) {
+    public static void assertEquals(Integer expected, Integer actual, int delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(int expected, int actual) {
+    public static void assertEquals(int expected, int actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(int expected, Integer actual) {
+    public static void assertEquals(int expected, Integer actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(Integer expected, int actual) {
+    public static void assertEquals(Integer expected, int actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(Integer expected, Integer actual) {
+    public static void assertEquals(Integer expected, Integer actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(double expected, double actual, double delta, String message) {
+    public static void assertEquals(double expected, double actual, double delta, String message) {
         if (!(expected >= actual - delta && expected <= actual + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(double expected, Double actual, double delta, String message) {
+    public static void assertEquals(double expected, Double actual, double delta, String message) {
         if (!(expected >= actual.doubleValue() - delta && expected <= actual.doubleValue() + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Double expected, double actual, double delta, String message) {
+    public static void assertEquals(Double expected, double actual, double delta, String message) {
         if (!(expected.doubleValue() >= actual - delta && expected.doubleValue() <= actual + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Double expected, Double actual, double delta, String message) {
+    public static void assertEquals(Double expected, Double actual, double delta, String message) {
         if (!(expected.doubleValue() >= actual.doubleValue() - delta && expected.doubleValue() <= actual.doubleValue() + delta)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(double expected, double actual, double delta) {
+    public static void assertEquals(double expected, double actual, double delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(double expected, Double actual, double delta) {
+    public static void assertEquals(double expected, Double actual, double delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(Double expected, double actual, double delta) {
+    public static void assertEquals(Double expected, double actual, double delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(Double expected, Double actual, double delta) {
+    public static void assertEquals(Double expected, Double actual, double delta) {
         assertEquals(expected, actual, delta, null);
     }
 
-    private static void assertEquals(double expected, double actual) {
+    public static void assertEquals(double expected, double actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(double expected, Double actual) {
+    public static void assertEquals(double expected, Double actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(Double expected, double actual) {
+    public static void assertEquals(Double expected, double actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(Double expected, Double actual) {
+    public static void assertEquals(Double expected, Double actual) {
         assertEquals(expected, actual, 0, null);
     }
 
-    private static void assertEquals(byte expected, byte actual, String message) {
+    public static void assertEquals(byte expected, byte actual, String message) {
         if (expected != actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(byte expected, Byte actual, String message) {
+    public static void assertEquals(byte expected, Byte actual, String message) {
         if (expected != actual.byteValue()) {
             fail(expected, actual, message);
         }
     }
-    private static void assertEquals(Byte expected, byte actual, String message) {
+
+    public static void assertEquals(Byte expected, byte actual, String message) {
         if (expected.byteValue() != actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Byte expected, Byte actual, String message) {
+    public static void assertEquals(Byte expected, Byte actual, String message) {
         if (expected.byteValue() != actual.byteValue()) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(byte expected, byte actual) {
+    public static void assertEquals(byte expected, byte actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertEquals(byte expected, Byte actual) {
-        assertEquals(expected, actual, null);
-    }
-    private static void assertEquals(Byte expected, byte actual) {
+    public static void assertEquals(byte expected, Byte actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertEquals(Byte expected, Byte actual) {
+    public static void assertEquals(Byte expected, byte actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertEquals(char expected, char actual, String message) {
+    public static void assertEquals(Byte expected, Byte actual) {
+        assertEquals(expected, actual, null);
+    }
+
+    public static void assertEquals(char expected, char actual, String message) {
         if (expected != actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(char expected, Character actual, String message) {
+    public static void assertEquals(char expected, Character actual, String message) {
         if (expected != actual.charValue()) {
             fail(expected, actual, message);
         }
     }
-    private static void assertEquals(Character expected, char actual, String message) {
+
+    public static void assertEquals(Character expected, char actual, String message) {
         if (expected.charValue() != actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Character expected, Character actual, String message) {
+    public static void assertEquals(Character expected, Character actual, String message) {
         if (expected.charValue() != actual.charValue()) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(char expected, char actual) {
+    public static void assertEquals(char expected, char actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertEquals(char expected, Character actual) {
-        assertEquals(expected, actual, null);
-    }
-    private static void assertEquals(Character expected, char actual) {
+    public static void assertEquals(char expected, Character actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertEquals(Character expected, Character actual) {
+    public static void assertEquals(Character expected, char actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertEquals(Object expected, Object actual, String message) {
+    public static void assertEquals(Character expected, Character actual) {
+        assertEquals(expected, actual, null);
+    }
+
+    public static void assertEquals(Object expected, Object actual, String message) {
         if (!expected.equals(actual)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertEquals(Object expected, Object actual) {
+    public static void assertEquals(Object expected, Object actual) {
         assertEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(int expected, int actual, int delta, String message) {
+    public static void assertNotEquals(int expected, int actual, int delta, String message) {
         if (expected >= actual - delta && expected <= actual + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(int expected, Integer actual, int delta, String message) {
+    public static void assertNotEquals(int expected, Integer actual, int delta, String message) {
         if (expected >= actual.intValue() - delta && expected <= actual.intValue() + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Integer expected, int actual, int delta, String message) {
+    public static void assertNotEquals(Integer expected, int actual, int delta, String message) {
         if (expected.intValue() >= actual - delta && expected.intValue() <= actual + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Integer expected, Integer actual, int delta, String message) {
+    public static void assertNotEquals(Integer expected, Integer actual, int delta, String message) {
         if (expected.intValue() >= actual.intValue() - delta && expected.intValue() <= actual.intValue() + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(int expected, int actual, int delta) {
+    public static void assertNotEquals(int expected, int actual, int delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(int expected, Integer actual, int delta) {
+    public static void assertNotEquals(int expected, Integer actual, int delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(Integer expected, int actual, int delta) {
+    public static void assertNotEquals(Integer expected, int actual, int delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(Integer expected, Integer actual, int delta) {
+    public static void assertNotEquals(Integer expected, Integer actual, int delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(int expected, int actual) {
+    public static void assertNotEquals(int expected, int actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(int expected, Integer actual) {
+    public static void assertNotEquals(int expected, Integer actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(Integer expected, int actual) {
+    public static void assertNotEquals(Integer expected, int actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(Integer expected, Integer actual) {
+    public static void assertNotEquals(Integer expected, Integer actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(double expected, double actual, double delta, String message) {
+    public static void assertNotEquals(double expected, double actual, double delta, String message) {
         if (expected >= actual - delta && expected <= actual + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(double expected, Double actual, double delta, String message) {
+    public static void assertNotEquals(double expected, Double actual, double delta, String message) {
         if (expected >= actual.doubleValue() - delta && expected <= actual.doubleValue() + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Double expected, double actual, double delta, String message) {
+    public static void assertNotEquals(Double expected, double actual, double delta, String message) {
         if (expected.doubleValue() >= actual - delta && expected.doubleValue() <= actual + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Double expected, Double actual, double delta, String message) {
+    public static void assertNotEquals(Double expected, Double actual, double delta, String message) {
         if (expected.doubleValue() >= actual.doubleValue() - delta && expected.doubleValue() <= actual.doubleValue() + delta) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(double expected, double actual, double delta) {
+    public static void assertNotEquals(double expected, double actual, double delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(double expected, Double actual, double delta) {
+    public static void assertNotEquals(double expected, Double actual, double delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(Double expected, double actual, double delta) {
+    public static void assertNotEquals(Double expected, double actual, double delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(Double expected, Double actual, double delta) {
+    public static void assertNotEquals(Double expected, Double actual, double delta) {
         assertNotEquals(expected, actual, delta, null);
     }
 
-    private static void assertNotEquals(double expected, double actual) {
+    public static void assertNotEquals(double expected, double actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(double expected, Double actual) {
+    public static void assertNotEquals(double expected, Double actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(Double expected, double actual) {
+    public static void assertNotEquals(Double expected, double actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(Double expected, Double actual) {
+    public static void assertNotEquals(Double expected, Double actual) {
         assertNotEquals(expected, actual, 0, null);
     }
 
-    private static void assertNotEquals(byte expected, byte actual, String message) {
+    public static void assertNotEquals(byte expected, byte actual, String message) {
         if (expected == actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(byte expected, Byte actual, String message) {
+    public static void assertNotEquals(byte expected, Byte actual, String message) {
         if (expected == actual.byteValue()) {
             fail(expected, actual, message);
         }
     }
-    private static void assertNotEquals(Byte expected, byte actual, String message) {
+
+    public static void assertNotEquals(Byte expected, byte actual, String message) {
         if (expected.byteValue() == actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Byte expected, Byte actual, String message) {
+    public static void assertNotEquals(Byte expected, Byte actual, String message) {
         if (expected.byteValue() == actual.byteValue()) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(byte expected, byte actual) {
+    public static void assertNotEquals(byte expected, byte actual) {
         assertNotEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(byte expected, Byte actual) {
-        assertNotEquals(expected, actual, null);
-    }
-    private static void assertNotEquals(Byte expected, byte actual) {
+    public static void assertNotEquals(byte expected, Byte actual) {
         assertNotEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(Byte expected, Byte actual) {
+    public static void assertNotEquals(Byte expected, byte actual) {
         assertNotEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(char expected, char actual, String message) {
+    public static void assertNotEquals(Byte expected, Byte actual) {
+        assertNotEquals(expected, actual, null);
+    }
+
+    public static void assertNotEquals(char expected, char actual, String message) {
         if (expected == actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(char expected, Character actual, String message) {
+    public static void assertNotEquals(char expected, Character actual, String message) {
         if (expected == actual.charValue()) {
             fail(expected, actual, message);
         }
     }
-    private static void assertNotEquals(Character expected, char actual, String message) {
+
+    public static void assertNotEquals(Character expected, char actual, String message) {
         if (expected.charValue() == actual) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Character expected, Character actual, String message) {
+    public static void assertNotEquals(Character expected, Character actual, String message) {
         if (expected.charValue() == actual.charValue()) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(char expected, char actual) {
+    public static void assertNotEquals(char expected, char actual) {
         assertNotEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(char expected, Character actual) {
-        assertNotEquals(expected, actual, null);
-    }
-    private static void assertNotEquals(Character expected, char actual) {
+    public static void assertNotEquals(char expected, Character actual) {
         assertNotEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(Character expected, Character actual) {
+    public static void assertNotEquals(Character expected, char actual) {
         assertNotEquals(expected, actual, null);
     }
 
-    private static void assertNotEquals(Object expected, Object actual, String message) {
+    public static void assertNotEquals(Character expected, Character actual) {
+        assertNotEquals(expected, actual, null);
+    }
+
+    public static void assertNotEquals(Object expected, Object actual, String message) {
         if (expected.equals(actual)) {
             fail(expected, actual, message);
         }
     }
 
-    private static void assertNotEquals(Object expected, Object actual) {
+    public static void assertNotEquals(Object expected, Object actual) {
         assertNotEquals(expected, actual, null);
     }
 
