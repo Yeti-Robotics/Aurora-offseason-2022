@@ -44,7 +44,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
             c.getTests();
         }
 
-        SendableRegistry.addLW(this, "RESTHandler");
+        SendableRegistry.add(this, "RESTHandler");
     }
 
     public void fullTest() {
@@ -123,8 +123,8 @@ public class RESTHandler implements Sendable, AutoCloseable {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("RESTHandler");
-        for (RESTContainer rest : restContainers) {
-            builder.addStringArrayProperty(rest.getClass().getSimpleName(), () -> getRESTResults(rest.getClass()).toArray(new String[5]), null);
+        for (RESTContainer container : restContainers) {
+            builder.addStringArrayProperty(container.getClass().getSimpleName(), () -> getRESTResults(container.getClass()).toArray(new String[container.getTests().size() - 1]), null);
         }
     }
 
@@ -146,6 +146,7 @@ public class RESTHandler implements Sendable, AutoCloseable {
 
         @Override
         public void initialize() {
+            RESTTimer.reset();
             test.init();
         }
 
