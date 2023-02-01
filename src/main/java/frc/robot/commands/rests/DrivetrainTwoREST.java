@@ -1,7 +1,7 @@
 package frc.robot.commands.rests;
 
+import frc.robot.commands.rests.restAnnotations.REST;
 import frc.robot.commands.rests.restAnnotations.Requirement;
-import frc.robot.commands.rests.restAnnotations.Test;
 import frc.robot.commands.rests.restUtils.RESTContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -25,7 +25,7 @@ public class DrivetrainTwoREST extends RESTContainer {
     protected void after() {
     }
 
-    @Test
+    @REST
     void driveForwards() {
         init(() -> {
             drivetrainSubsystem.resetEncoders();
