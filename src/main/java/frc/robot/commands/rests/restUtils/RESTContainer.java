@@ -1,6 +1,7 @@
 package frc.robot.commands.rests.restUtils;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.commands.rests.restAnnotations.REST;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -9,45 +10,40 @@ import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 /**
- * Contains REST tests (methods annotated with @Test)
+ * Contains REST tests (methods annotated with @REST)
  */
 public abstract class RESTContainer {
-    public static class RobotEnableSelfTest {
-        private final String name;
-
-        private final Runnable initFn;
-        private final Runnable executeFn;
-        private final BooleanSupplier isFinishedFn;
-        private final Runnable endFn;
-
-        public RobotEnableSelfTest(String name, Runnable init, Runnable execute, BooleanSupplier isFinished, Runnable end) {
-            this.name = name;
-            this.initFn = init;
-            this.executeFn = execute;
-            this.isFinishedFn = isFinished;
-            this.endFn = end;
+    /**
+     * Retrieves all subsystems in the RESTContainer
+     * annotated with @Requirement.
+     * If the subsystems have already been retrieved,
+     * requirements will be returned without reflecting again.
+     *
+     * @return required subsystems
+     */
+    public final Subsystem[] getRequirements() {
+        if (requirements != null) {
+            return requirements;
         }
 
-        public String getName() {
-            return name;
+        ArrayList<Subsystem> tempRequirements = new ArrayList<>();
+
+        Class<?> extendingClass = this.getClass();
+
+        for (Field field : extendingClass.getDeclaredFields()) {
+            if (field.isAnnotationPresent(frc.robot.commands.rests.restAnnotations.Requirement.class)) {
+                field.setAccessible(true);
+
+                try {
+                    tempRequirements.add((Subsystem) field.get(this));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
-        public void init() {
-            if (initFn != null) initFn.run();
-        }
-
-        public void execute() {
-            if (executeFn != null) executeFn.run();
-        }
-
-        public boolean isFinished() {
-            if (isFinishedFn != null) return isFinishedFn.getAsBoolean();
-            return true;
-        }
-
-        public void end() throws RESTAssertionException {
-            if (endFn != null) endFn.run();
-        }
+        requirements = tempRequirements.toArray(new Subsystem[0]);
+        return requirements;
     }
 
     private Subsystem[] requirements;
@@ -112,32 +108,14 @@ public abstract class RESTContainer {
         return RESTTimer.hasElapsed(seconds);
     }
 
-    public final Subsystem[] getRequirements() {
-        if (requirements != null) {
-            return requirements;
-        }
-
-        ArrayList<Subsystem> tempRequirements = new ArrayList<>();
-
-        Class<?> extendingClass = this.getClass();
-
-        for (Field field : extendingClass.getDeclaredFields()) {
-            if (field.isAnnotationPresent(frc.robot.commands.rests.restAnnotations.Requirement.class)) {
-                field.setAccessible(true);
-
-                try {
-                    tempRequirements.add((Subsystem) field.get(this));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        requirements = tempRequirements.toArray(new Subsystem[0]);
-        return requirements;
-    }
-
-    // final means cannot be overridden here
+    /**
+     * Retrieves all RobotEnabledSelfTests in the RESTContainer
+     * annotated with @REST.
+     * If the RESTs have already been composed,
+     * RESTs will be returned without reflecting again.
+     *
+     * @return all RESTs in the RESTContainer
+     */
     public final ArrayList<RobotEnableSelfTest> getTests() {
         if (tests != null) {
             return tests;
@@ -149,7 +127,7 @@ public abstract class RESTContainer {
         Class<?> extendingClass = this.getClass();
 
         for (Method method : extendingClass.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(frc.robot.commands.rests.restAnnotations.Test.class)) {
+            if (method.isAnnotationPresent(REST.class)) {
                 if (method.getParameterCount() > 0) {
                     throw new RuntimeException("Methods annotated with @Test must not have parameters.");
                 }
@@ -175,6 +153,63 @@ public abstract class RESTContainer {
         }
 
         return tests;
+    }
+
+    /**
+     * Runs a set of actions on the robot, then retrieves
+     * data from the robot to check for functionality.
+     * <p>
+     * DO NOT RUN THE TEST WITHOUT A CONTAINER.
+     * Tests must be part of a RESTContainer that is scheduled
+     * with the RESTHandler
+     */
+    public static class RobotEnableSelfTest {
+        /**
+         * name should be the name of the method annotated with @REST
+         */
+        private final String name;
+
+        private final Runnable initFn;
+        private final Runnable executeFn;
+        private final BooleanSupplier isFinishedFn;
+        private final Runnable endFn;
+
+        /**
+         * @param name       name of the REST
+         * @param init       ran once at the beginning of the test
+         * @param execute    runs every iteration of the test
+         * @param isFinished runs every iteration to determine when to end the test
+         * @param end        ran at the end of the test. checks if the test has passed.
+         *                   throws a RESTAssertionException if failed.
+         */
+        public RobotEnableSelfTest(String name, Runnable init, Runnable execute, BooleanSupplier isFinished, Runnable end) {
+            this.name = name;
+            this.initFn = init;
+            this.executeFn = execute;
+            this.isFinishedFn = isFinished;
+            this.endFn = end;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void init() {
+            if (initFn != null) initFn.run();
+        }
+
+        public void execute() {
+            if (executeFn != null) executeFn.run();
+        }
+
+        public boolean isFinished() {
+            if (isFinishedFn != null) return isFinishedFn.getAsBoolean();
+            return true;
+        }
+
+        public void end() throws RESTAssertionException {
+            if (endFn != null) endFn.run();
+        }
     }
 
 }
